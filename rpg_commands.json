@@ -1,0 +1,66 @@
+{
+    "commands":
+    [
+        {
+            "name": "help",
+            "description": "Displays all commands available in the bot",
+            "category": "action"
+        },
+        {
+            "name": "chop",
+            "description": "Chop wood. Only if you have an axe",
+            "category": "action"
+        },
+        {
+            "name": "dig",
+            "description": "Have a dig around. Only if you have a shovel",
+            "category": "action"
+        },
+        {
+            "name": "mine",
+            "description": "Go on a mining trip. Only if you have a pickaxe",
+            "category": "action"
+        },
+        {
+            "name": "fish",
+            "description": "Go fishing. Only if you have a fishing rod",
+            "category": "action"
+        },
+        {
+            "name": "hunt",
+            "description": "Go on a hunting trip. Only if you have a weapon",
+            "category": "action"
+        },
+        {
+            "name": "inv",
+            "description": "Shows the items in your inventory",
+            "category": "inventory"
+        },
+        {
+            "name": "craft <item name> <(optional) amount>",
+            "description": "Craft items"
+        },
+        {
+            "name": "smelt <item name> <(optional) amount>",
+            "description": "Smelt items"
+        },
+        {
+            "name": "addfuel <item name>",
+            "description": "Add fuel to your fuel stockpile (required to smelt items)"
+        },
+        {
+            "name": "recipes",
+            "description": "Shows all the items that can be crafted in the game"
+        },
+        {
+            "name": "myrecipes",
+            "description": "Shows all items that you have the items to craft",
+            "category": "action"
+        },
+        {
+            "name": "stats",
+            "description": "Shows key statistics about a player",
+            "category": "action"
+        }
+    ]
+}

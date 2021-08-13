@@ -1,0 +1,356 @@
+{
+    "recipes":
+    [
+        {
+            "id": "3",
+            "name": "Oak Wood Plank",
+            "command-name": "oakplank",
+            "required-items":
+            [
+                {"id": "2", "name": "Oak Wood Log"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "3:1",
+            "name": "Birch Wood Plank",
+            "command-name": "birchplank",
+            "required-items":
+            [
+                {"id": "2:1", "name": "Birch Wood Log"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "3:2",
+            "name": "Ash Wood Plank",
+            "command-name": "ashplank",
+            "required-items":
+            [
+                {"id": "2:2", "name": "Birch Wood Log"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "12",
+            "name": "Stick",
+            "command-name": "oakstick",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "12",
+            "name": "Stick",
+            "command-name": "birchstick",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "12",
+            "name": "Stick",
+            "command-name": "ashstick",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "13",
+            "name": "Wooden Sword",
+            "command-name": "oaksword",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id":"12", "name": "Stick"}                       
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "13",
+            "name": "Wooden Sword",
+            "command-name": "birchsword",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id":"12", "name": "Stick"}                       
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "13",
+            "name": "Wooden Sword",
+            "command-name": "ashsword",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id":"12", "name": "Stick"}                       
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "13:1",
+            "name": "Stone Sword",
+            "command-name": "stonesword",
+            "required-items":
+            [
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id":"12", "name": "Stick"}                       
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "14",
+            "name": "Wooden Pickaxe",
+            "command-name": "oakpick",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"}, 
+                {"id": "3", "name": "Oak Wood Plank"}, 
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "14",
+            "name": "Wooden Pickaxe",
+            "command-name": "birchpick",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "14",
+            "name": "Wooden Pickaxe",
+            "command-name": "ashpick",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "14:1",
+            "name": "Stone Pickaxe",
+            "command-name": "stonepick",
+            "required-items":
+            [
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "15",
+            "name": "Wooden Axe",
+            "command-name": "oakaxe",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"}, 
+                {"id": "3", "name": "Oak Wood Plank"}, 
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "15",
+            "name": "Wooden Axe",
+            "command-name": "birchaxe",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "15",
+            "name": "Wooden Axe",
+            "command-name": "ashaxe",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "15:1",
+            "name": "Stone Axe",
+            "command-name": "stoneaxe",
+            "required-items":
+            [
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16",
+            "name": "Wooden Shovel",
+            "command-name": "oakshovel",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16",
+            "name": "Wooden Shovel",
+            "command-name": "birchshovel",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16",
+            "name": "Wooden Shovel",
+            "command-name": "ashshovel",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16:1",
+            "name": "Stone Shovel",
+            "command-name": "stoneshovel",
+            "required-items":
+            [
+                {"id": "0", "name": "Stone"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16:2",
+            "name": "Iron Shovel",
+            "command-name": "ironshovel",
+            "required-items":
+            [
+                {"id": "9", "name": "Iron Ingot"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "16:3",
+            "name": "Gold Shovel",
+            "command-name": "goldshovel",
+            "required-items":
+            [
+                {"id": "10", "name": "Gold"},
+                {"id":"12", "name": "Stick"},
+                {"id":"12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
+            "id": "20",
+            "name": "Crafting Table",
+            "command-name": "oakcrafttable",
+            "required-items":
+            [
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"},
+                {"id": "3", "name": "Oak Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "20",
+            "name": "Crafting Table",
+            "command-name": "birchcrafttable",
+            "required-items":
+            [
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"},
+                {"id": "3:1", "name": "Birch Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "20",
+            "name": "Crafting Table",
+            "command-name": "ashcrafttable",
+            "required-items":
+            [
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"},
+                {"id": "3:2", "name": "Ash Wood Plank"}
+            ],
+            "craft-required": "none"
+        },
+        {
+            "id": "20:1",
+            "name": "Furnace",
+            "command-name": "furnace",
+            "required-items":
+            [
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"},
+                {"id": "0", "name": "Stone"}
+            ],
+            "craft-required": "table"
+        }
+    ]
+}
