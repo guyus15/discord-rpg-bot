@@ -1,51 +1,63 @@
 import json
 
-users_file = "rpg_users.json"
-items_file = "rpg_items.json"
-recipes_file = "rpg_crafting_recipes.json"
-commands_file = "rpg_commands.json"
+USERS_FILE = "rpg_users.json"
+ITEMS_FILE = "rpg_items.json"
+RECIPES_FILE = "rpg_crafting_recipes.json"
+COMMANDS_FILE = "rpg_commands.json"
 
 class JsonHandler:
+    
     @staticmethod
     def get_users():
-        users = json.loads(open(users_file, "r").read())["users"]
 
         users_list = []
 
-        for user in users:
-            users_list.append(user)
+        with open(USERS_FILE, "r") as users_file:
+            users = json.loads(users_file.read())["users"]
+
+            for user in users:
+                users_list.append(user)
 
         return users_list
 
+
     @staticmethod
     def get_items():
-        items = json.loads(open(items_file, "r").read())["items"]
-
+        
         items_list = []
 
-        for item in items:
-            items_list.append(item)
+        with open(ITEMS_FILE, "r") as items_file:
+            items = json.loads(items_file.read())["items"]
+
+            for item in items:
+                items_list.append(item)
 
         return items_list
 
+
     @staticmethod
     def get_recipes():
-        recipes = json.loads(open(recipes_file, "r").read())["recipes"]
 
         recipes_list = []
 
-        for recipe in recipes:
-            recipes_list.append(recipe)
+        with open(RECIPES_FILE, "r") as recipes_file:
+            recipes = json.loads(recipes_file.read())["recipes"]
+
+            for recipe in recipes:
+                recipes_list.append(recipe)
 
         return recipes_list
 
+
     @staticmethod
     def get_commands():
-        commands = json.loads(open(commands_file, "r").read())["commands"]
 
-        commands_list = []
+        command_list = []
 
-        for command in commands:
-            commands_list.append(command)
+        with open(COMMANDS_FILE, "r") as commands_file:
+            commands = json.loads(commands_file.read())["commands"]
 
-        return commands_list
+            for command in commands:
+                command_list.append(command)
+
+        return command_list

@@ -7,7 +7,7 @@ from rpg_inventory import Inventory
 from rpg_item import Item
 
 class Player:
-    def __init__(self, name, user = None):
+    def __init__(self, name, user=None):
         self.name = name
         self.max_health = 100
         self.max_armour = 100
@@ -86,7 +86,14 @@ class Player:
         return False
 
     def get_time_to_wait(self):
-        return round(self.cooldown_duration - (time.time() - self.current_cooldown_time))
+        
+        time_in_seconds =  round(self.cooldown_duration - (time.time() - self.current_cooldown_time))
+
+        if time_in_seconds // 60 > 0:
+            return "{}min {}s".format(str(time_in_seconds // 60), str(time_in_seconds % 60))
+        else:
+            return "{}s".format(str(time_in_seconds % 60))
+
 
     def get_action_items(self, type):
 
@@ -197,8 +204,6 @@ class Player:
 
         if self.can_do_action():
             choice = random.choice(diggable_items)
-
-            print(choice)
 
             random_value = random.randint(0, choice.max_number)
 

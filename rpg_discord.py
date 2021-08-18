@@ -1,9 +1,10 @@
 import discord
 import asyncio
-
+import itertools
 from discord.ext import commands
 
 from rpg_player import Player
+from rpg_item import Item
 from rpg_json_handler import JsonHandler
 from rpg_crafting import CraftingSystem
 from rpg_bot_info import BotInfo
@@ -27,17 +28,17 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message):
-    if message.author == bot.user:
+async def on_message(ctx):
+    if ctx.author == bot.user:
         return
 
-    message.content = message.content.lower()
+    ctx.content = ctx.content.lower()
 
-    BotInfo.set_last_message(message)
+    BotInfo.set_last_message(ctx)
 
-    await find_player(message)
+    await find_player(ctx)
 
-    await bot.process_commands(message)
+    await bot.process_commands(ctx)
 
 
 @bot.event
@@ -62,23 +63,29 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed_var)
 
 
-async def find_player(ctx, other=None):
-    if other is None:
-        for user in JsonHandler.get_users():
-            if user["name"] == str(ctx.author):
-                player = Player(str(ctx.author), user)
-                BotInfo.set_current_player(player)
+async def find_player(ctx):
+    for user in JsonHandler.get_users():
+        if user["name"] == str(ctx.author):
+            player = Player(str(ctx.author), user)
+            BotInfo.set_current_player(player)
 
-                return True
+            return True
 
-        return False
+    return False
 
+
+async def get_player(ctx, player_name):
+
+    player = None
+
+    for user in JsonHandler.get_users():
+        if user["name"] == player_name:
+            player = Player(ctx.author, user=user)
+
+    if not player is None:
+        print("I have found player {}!".format(player.name))
     else:
-        for user in JsonHandler.get_users():
-            if user["name"] == other:
-                return True
-
-        return False
+        print("I have not found any player's with this name")
 
 
 async def create_player(ctx):
@@ -281,10 +288,10 @@ async def hunt(ctx):
 
 
 @bot.command()
-async def inv(ctx, arg=None):
+async def inv(ctx, other_user=None):
     # Show player's inventory
 
-    if arg is None:
+    if other_user is None:
         cur_page = 0
 
         unique_items = {}
@@ -377,6 +384,7 @@ async def inv(ctx, arg=None):
         embed_var = discord.Embed(title="Information",
                                   description="{} viewing other people's inventory is not available at the moment"
                                   .format(ctx.author.mention), color=ctx.author.colour)
+        
         await ctx.send(embed=embed_var)
 
 
@@ -548,17 +556,13 @@ async def my_recipes(ctx):
         pages_list = await split_into_pages(craftable_items, 5)
 
         for craftable_item in pages_list[cur_page]:
-            current_item = None
 
-            for item in JsonHandler.get_recipes():
-                if item["id"] == craftable_item:
-                    current_item = item
-                    break
+            current_item = Item.get_item_by_id(craftable_item)
 
-            embed_var.add_field(name=current_item["name"],
-                                value="`{}` - Quantity: {}".format(current_item["command-name"],
+            embed_var.add_field(name=current_item.name,
+                                value="`{}` - Quantity: {}".format(current_item.command_name,
                                                                    str(craftable_items.get(craftable_item))),
-                                inline=False)
+                                                                   inline=False)
 
         if len(pages_list) > 1:
             embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -590,17 +594,13 @@ async def my_recipes(ctx):
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
                         for craftable_item in pages_list[cur_page]:
-                            current_item = None
+                          
+                            current_item = Item.get_item_by_id(craftable_item)
 
-                            for item in JsonHandler.get_recipes():
-                                if item["id"] == craftable_item:
-                                    current_item = item
-                                    break
-
-                            new_embed.add_field(name=current_item["name"],
-                                                value="`{}` - Quantity: {}".format(current_item["command-name"],
-                                                                                   str(craftable_items.get(
-                                                                                       craftable_item))), inline=False)
+                            new_embed.add_field(name=current_item.name,
+                                                value="`{}` - Quantity: {}".format(current_item.command_name,
+                                                                                    str(craftable_items.get(craftable_item))),
+                                                                                    inline=False)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -620,17 +620,13 @@ async def my_recipes(ctx):
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
                         for craftable_item in pages_list[cur_page]:
-                            current_item = None
 
-                            for item in JsonHandler.get_recipes():
-                                if item["id"] == craftable_item:
-                                    current_item = item
-                                    break
+                            current_item = Item.get_item_by_id(craftable_item)
 
-                            new_embed.add_field(name=current_item["name"],
-                                                value="`{}` - Quantity: {}".format(current_item["command-name"],
-                                                                                   str(craftable_items.get(
-                                                                                       craftable_item))), inline=False)
+                            new_embed.add_field(name=current_item.name,
+                                                value="`{}` - Quantity: {}".format(current_item.command_name,
+                                                                                    str(craftable_items.get(craftable_item))),
+                                                                                    inline=False)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -669,6 +665,27 @@ async def craft_error(ctx, error):
                                       ctx.author.mention, PREFIX), color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
+
+
+@bot.command(name="smeltable")
+async def get_smeltable(ctx):
+    embed_var = discord.Embed(title="Smeltable Items", description="Showing items that {} can smelt:".format(ctx.author.mention),
+                                color=ctx.author.colour)
+    embed_var = embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+    smeltable_items = BotInfo.crafting_system.get_smeltable_items()
+
+    for smeltable_item in smeltable_items:
+        
+        current_item = Item.get_item_by_id(smeltable_item)
+        smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
+
+        embed_var.add_field(name="{} :arrow_right: {}".format(current_item.name, smelt_item.name), 
+                            value="`{}` - Quantity: {}".format(current_item.command_name, smeltable_items.get(smeltable_item)),
+                            inline=False)
+
+    await ctx.send(embed=embed_var)
+
 
 @bot.command()
 async def smelt(ctx, item, amount = None):
