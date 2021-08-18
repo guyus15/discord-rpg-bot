@@ -1,6 +1,8 @@
 import discord
 import asyncio
-import itertools
+import os
+import sys
+
 from discord.ext import commands
 
 from rpg_player import Player
@@ -9,7 +11,17 @@ from rpg_json_handler import JsonHandler
 from rpg_crafting import CraftingSystem
 from rpg_bot_info import BotInfo
 
-discord_token = "ODY2Mjk2OTA5OTI3Njc3OTcy.YPQf3g.0mM614HgrJND4lAkwv7CMf_W_2o"
+discord_token = ""
+
+try:
+    if not "RPG-BOT" in os.environ:
+        raise KeyError
+
+    discord_token = os.environ['RPG-BOT']
+
+except KeyError:
+    print("ERROR: Could not find environment variable 'RPG-BOT'")
+    sys.exit(1)
 
 users_file = "rpg_users.json"
 
