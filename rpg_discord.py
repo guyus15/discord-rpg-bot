@@ -15,7 +15,7 @@ from rpg_bot_info import BotInfo
 discord_token = ""
 
 try:
-    if not "RPG-BOT" in os.environ:
+    if not "RPG_BOT" in os.environ:
         raise KeyError
 
     discord_token = os.environ['RPG-BOT']
