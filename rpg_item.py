@@ -82,7 +82,7 @@ class Item:
 
         for item in JsonHandler.get_items():
             
-            if str(id) == item["id"]:
+            if str(id) == str(item["id"]):
                 current_item = Item(item)
                 return current_item
 

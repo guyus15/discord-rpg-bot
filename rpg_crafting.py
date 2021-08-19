@@ -145,6 +145,7 @@ class CraftingSystem:
 
                 if item_to_add is None:
                     print("Could not find the crafted item in the items list.")
+                    return "This is broken. Inform my master Guigger"
                     
             BotInfo.current_player.save_json()
 

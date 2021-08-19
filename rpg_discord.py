@@ -591,8 +591,8 @@ async def all_recipes(ctx):
 @bot.command(name="myrecipes",
             help="View all the items which you can make\nUse the arrows to navigate",
             brief="View items you can make",
-            usage="{}myrecipes or {}myreps".format(PREFIX, PREFIX),
-            aliases=["myreps"])
+            usage="{}myrecipes or {}mr".format(PREFIX, PREFIX),
+            aliases=["mr"])
 async def my_recipes(ctx):
     cur_page = 0
 
@@ -737,13 +737,21 @@ async def get_smeltable(ctx):
     smeltable_items = BotInfo.crafting_system.get_smeltable_items()
 
     for smeltable_item in smeltable_items:
-        
+  
         current_item = Item.get_item_by_id(smeltable_item)
         smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
 
+        if current_item == None or smelt_item == None:
+            break
+
+        print("Trying to get current item name...")
+        print(current_item.name)
+        print("Done.")
+        
         embed_var.add_field(name="{} :arrow_right: {}".format(current_item.name, smelt_item.name), 
                             value="`{}` - Quantity: {}".format(current_item.command_name, smeltable_items.get(smeltable_item)),
                             inline=False)
+
 
     await ctx.send(embed=embed_var)
 
