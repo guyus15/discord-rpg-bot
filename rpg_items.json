@@ -581,8 +581,8 @@
         },
         {
             "id": "30",
-            "name": "Raw Lamb Meat",
-            "command-name": "lambmeat",
+            "name": "Raw Lamb",
+            "command-name": "rawlamb",
             "description": "A hunk of raw lamb meat ripped from an innocent baby",
             "value": 10,
             "max-number": 3,
@@ -597,8 +597,8 @@
         },
         {
             "id": "30:1",
-            "name": "Cooked Lamb Meat",
-            "command-name": "cookedlambmeat",
+            "name": "Cooked Lamb",
+            "command-name": "cookedlamb",
             "description": "A cooked hunk of lamb meat",
             "value": 10,
             "max-number": 3,

@@ -30,7 +30,7 @@ class Item:
     def get_command_name(self):
         return self.command_name
 
-    def get_decription(self):
+    def get_description(self):
         return self.description
 
     def get_value(self):

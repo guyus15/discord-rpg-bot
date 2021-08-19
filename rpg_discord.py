@@ -384,18 +384,21 @@ async def inv(ctx, other_user=None):
         else:
 
             for item in BotInfo.current_player.inventory.get_items():
-                if item.get_name() in unique_items:
-                    unique_items[item.get_name()] += 1
+                if item.get_id() in unique_items:
+                    unique_items[item.get_id()] += 1
                 else:
-                    unique_items[item.get_name()] = 1
+                    unique_items[item.get_id()] = 1
 
             pages_list = await split_into_pages(unique_items, 5)
 
             def populate_page(embed):
             
                 for item in pages_list[cur_page]:
-                    embed.add_field(name=item,
-                                    value=pages_list[cur_page].get(item),
+
+                    current_item = Item.get_item_by_id(item)
+
+                    embed.add_field(name="{} - `{}`".format(current_item.get_name(), current_item.get_command_name()),
+                                    value="{}\nQuantity: {}".format(current_item.get_description(), pages_list[cur_page].get(item)),
                                     inline=False)
 
             populate_page(embed_var)
@@ -753,7 +756,7 @@ async def get_smeltable(ctx):
 
     def populate_page(embed):
         for smeltable_item in pages_list[cur_page]:
-            
+
             current_item = Item.get_item_by_id(smeltable_item)
             smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
 
