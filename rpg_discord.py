@@ -180,15 +180,7 @@ async def start(ctx):
 
 
 @bot.command(hidden=True)
-async def help(ctx):
-
-    cur_page = 0
-
-    embed_var = discord.Embed(title="Help",
-                              description="Showing all commands for {}".format(ctx.author.mention),
-                              color=ctx.author.colour)
-
-    embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+async def help(ctx, command_name=None):
 
     start_commands = list(bot.commands)
     all_commands = []
@@ -200,6 +192,44 @@ async def help(ctx):
 
         all_commands.append(command)
 
+    if not command_name is None:
+
+        found_command = None
+
+        for command in all_commands:
+
+            if command.name == command_name or command_name in command.aliases:
+                found_command = command
+
+        if found_command is None:
+            embed_var = discord.Embed(title="Help",
+                                    description="**{} Could not find command with name** `{}`\nType `{}help` to view all commands".format(ctx.author.mention, command_name, PREFIX),
+                                    color=ctx.author.colour)
+            embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+            await ctx.send(embed=embed_var)
+            return
+
+        embed_var = discord.Embed(title="Help",
+                                  description="{} Showing details about the `{}` command:".format(ctx.author.mention, command_name),
+                                  color=ctx.author.colour)
+
+        embed_var.add_field(name="Command name: {}".format(found_command.name), value="{}".format(found_command.help), inline=False)
+        embed_var.add_field(name="Usage: ", value="`{}`".format(found_command.usage), inline=True)
+
+        embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+        await ctx.send(embed=embed_var)
+        return  
+
+    cur_page = 0
+
+    embed_var = discord.Embed(title="Help",
+                              description="Showing all commands for {}".format(ctx.author.mention),
+                              color=ctx.author.colour)
+
+    embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+
     pages_list = await split_into_pages(list(all_commands), 5)
 
     if len(pages_list) > 1:
@@ -207,8 +237,8 @@ async def help(ctx):
 
     def populate_page(embed):
         for command in pages_list[cur_page]:
-            embed.add_field(name = "`{}`".format(command.name),
-                                value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
+            embed.add_field(name="`{}`".format(command.name),
+                                value="**{}**\nUsage: `{}`".format(command.brief, command.usage),
                                 inline=False)
 
     populate_page(embed_var)
@@ -275,7 +305,7 @@ async def help(ctx):
                 # ending the loop if user doesn't react after x seconds
 
 
-@bot.command(help="Chop a tree an get wood.\nCan only be used if you have an axe",
+@bot.command(help="Chop a tree and gather wood.\nCan only be used if you have an axe",
             brief="Chop and get wood",
             usage="{}chop".format(PREFIX),
             aliases=["c"])
