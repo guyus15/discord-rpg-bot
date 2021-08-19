@@ -761,10 +761,17 @@ async def smelt_error(ctx, error):
             brief="Add fuel to your fuel stockpile",
             usage="{}addfuel or {}af".format(PREFIX, PREFIX),
             aliases=["af"])
-async def add_fuel(ctx, item):
+async def add_fuel(ctx, item, amount=None):
     
-    embed_var = discord.Embed(title="Adding Fuel", description=BotInfo.crafting_system.add_fuel(item),
-                              color=ctx.author.colour)
+    if amount is None:
+        embed_var = discord.Embed(title="Adding Fuel",
+                                 description=BotInfo.crafting_system.add_fuel(item),
+                                 color=ctx.author.colour)
+    else:
+        embed_var = discord.Embed(title="Adding Fuel",
+                                 description=BotInfo.crafting_system.add_fuel(item, amount),
+                                 color=ctx.author.colour)
+
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
     await ctx.send(embed=embed_var)

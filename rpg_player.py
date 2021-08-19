@@ -119,19 +119,6 @@ class Player:
 
         return item_found
 
-    def get_item_by_id(self, id):
-
-        item_found = None
-
-        for item in JsonHandler.get_items():
-            if item["id"] == id:
-                item_found = Item(item)
-
-        if item_found == None:
-            print("Could not find item with the name {}".format(id))       
-
-        return item_found
-
     def get_fuel_amount(self):
         return self.current_fuel_amount
 

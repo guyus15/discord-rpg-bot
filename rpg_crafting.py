@@ -251,17 +251,21 @@ class CraftingSystem:
     @staticmethod
     def get_fuel_items():
 
-        fuel_items = []
+        fuel_items = {}
 
         for item in BotInfo.current_player.inventory.get_items():
             if item.is_fuel():
-                fuel_items.append(item)
+                if item.get_id() in fuel_items:
+                    fuel_items[item.get_id()] += 1
+                else:
+                    fuel_items[item.get_id()] = 1
 
+        print("Fuel items {}".format(fuel_items))
         return fuel_items
 
 
     @staticmethod
-    def add_fuel(command_name):
+    def add_fuel(command_name, amount=None):
 
         command_name = command_name.lower().strip()
 
@@ -277,21 +281,45 @@ class CraftingSystem:
             return f"**{BotInfo.last_message_received.author.mention} could not find a fuel item with the name `{command_name}`.**"
 
         for item in CraftingSystem.get_fuel_items():
-            if item.get_command_name() == command_name:
+
+            current_fuel_item = Item.get_item_by_id(item)
+
+            if current_fuel_item.get_command_name() == command_name:
                 fuel_item = item
                 break
 
 
         if not fuel_item is None:
 
-            item_to_add = BotInfo.current_player.get_item_by_id(fuel_item.get_id())
+             # The amount of times to craft an item
+            loop_amount = 1
 
-            BotInfo.current_player.add_fuel(item_to_add.get_fuel_amount())
-            BotInfo.current_player.inventory.remove_item(item_to_add.get_id())
+            if not amount is None:
+                if not amount.isnumeric():
+                    return f"**{BotInfo.last_message_received.author.mention} the amount of items specified was not a valid number.**"
+
+                elif int(amount) <= 0:
+                    return f"**{BotInfo.last_message_received.author.mention} the amount specified must be a positive number.**"
+
+                elif int(amount) > CraftingSystem.get_fuel_items()[fuel_item]:
+                    return f"**{BotInfo.last_message_received.author.mention} you do not have enough resources to craft this many items.**"
+                
+                else:
+                    loop_amount = int(amount)
+
+            for i in range(loop_amount):
+
+                item_to_add = Item.get_item_by_id(fuel_item)
+
+                BotInfo.current_player.add_fuel(item_to_add.get_fuel_amount())
+                BotInfo.current_player.inventory.remove_item(item_to_add.get_id())
 
             BotInfo.current_player.save_json()
 
-            return "{} you have successfully added **{}** to your fuel".format(BotInfo.last_message_received.author.mention, item_to_add.get_name())
+            if loop_amount > 1:
+                return "{} you have successfully added **{} {}** to your fuel".format(BotInfo.last_message_received.author.mention, str(loop_amount), item_to_add.get_name())
+            else:
+                return "{} you have successfully added **{}** to your fuel".format(BotInfo.last_message_received.author.mention, item_to_add.get_name())
         
         else:
             return "**{} you do not have the resources to add this item to your fuel.**".format(BotInfo.last_message_received.author.mention)
