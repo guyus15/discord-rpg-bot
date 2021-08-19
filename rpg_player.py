@@ -220,11 +220,11 @@ class Player:
         if can_mine == False:
             return "**{} you cannot perform this action without a pickaxe.**".format(BotInfo.last_message_received.author.mention)
 
-        stone = self.get_item_by_id("0")
-        coal = self.get_item_by_id("5")
-        iron = self.get_item_by_id("6")
-        gold = self.get_item_by_id("7")
-        diamond = self.get_item_by_id("8")
+        stone = Item.get_item_by_id("0")
+        coal = Item.get_item_by_id("5")
+        iron = Item.get_item_by_id("6")
+        gold = Item.get_item_by_id("7")
+        diamond = Item.get_item_by_id("8")
 
         num_items = 0
         choice = None
