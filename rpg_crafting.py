@@ -164,6 +164,7 @@ class CraftingSystem:
         smeltable_items = {}
 
         for item in BotInfo.current_player.inventory.get_items():
+            
             if item.is_smeltable():
                 if item.get_id() in smeltable_items:
                     smeltable_items[item.get_id()] += 1
