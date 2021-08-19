@@ -310,7 +310,7 @@
             "craft-required": "none"
         },
         {
-            "id": "20",
+            "id": "20:1",
             "name": "Crafting Table",
             "command-name": "birchcrafttable",
             "required-items":
@@ -323,7 +323,7 @@
             "craft-required": "none"
         },
         {
-            "id": "20",
+            "id": "20:2",
             "name": "Crafting Table",
             "command-name": "ashcrafttable",
             "required-items":
@@ -336,7 +336,7 @@
             "craft-required": "none"
         },
         {
-            "id": "20:1",
+            "id": "21",
             "name": "Furnace",
             "command-name": "furnace",
             "required-items":

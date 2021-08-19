@@ -145,6 +145,7 @@ class CraftingSystem:
 
                 if item_to_add is None:
                     print("Could not find the crafted item in the items list.")
+                    return "This is broken. Inform my master Guigger"
                     
             BotInfo.current_player.save_json()
 
@@ -199,14 +200,11 @@ class CraftingSystem:
             return f"**{BotInfo.last_message_received.author.mention} could not find a smeltable item with the name `{command_name}`.**"
 
         for smeltable_item in CraftingSystem.get_smeltable_items():
-            current_item = None
 
-            for item in JsonHandler.get_items():
-                if item["id"] == smeltable_item:
-                    current_item = item
+            current_item = Item.get_item_by_id(smeltable_item)
 
-            if current_item["command-name"] == command_name:
-                smelt_item = Item(current_item)
+            if current_item.command_name == command_name:
+                smelt_item = current_item
                 break
 
         if not smelt_item is None:
@@ -216,13 +214,12 @@ class CraftingSystem:
 
             if not amount is None:
                 if not amount.isnumeric():
-                        return f"**{BotInfo.last_message_received.author.mention} the amount of items specified was not a valid number.**"
+                    return f"**{BotInfo.last_message_received.author.mention} the amount of items specified was not a valid number.**"
 
                 elif int(amount) <= 0:
                     return f"**{BotInfo.last_message_received.author.mention} the amount specified must be a positive number.**"
                 
                 elif int(amount) > BotInfo.current_player.get_fuel_amount() // smelt_item.get_fuel_required():
-                    print(BotInfo.current_player.get_fuel_amount() // smelt_item.get_fuel_required())
                     return f"**{BotInfo.last_message_received.author.mention} you do not have enough resources to smelt this many items.**"
                     
                 else:

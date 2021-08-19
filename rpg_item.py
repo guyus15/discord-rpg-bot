@@ -1,3 +1,5 @@
+from rpg_json_handler import JsonHandler
+
 class Item:
     def __init__(self, item):
         
@@ -72,3 +74,17 @@ class Item:
     def get_smelted_item_id(self):
         # Returns the item id of the item which this item will smelt into.
         return self.smelted_item
+
+    @staticmethod
+    def get_item_by_id(id):
+
+        current_item = None
+
+        for item in JsonHandler.get_items():
+            
+            if str(id) == str(item["id"]):
+                current_item = Item(item)
+                return current_item
+
+        print(f"Could not find item with ID: {id}.")
+            

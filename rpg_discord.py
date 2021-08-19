@@ -1,14 +1,28 @@
 import discord
 import asyncio
+import os
+import sys
 
 from discord.ext import commands
+from discord.ext.commands.core import command
 
 from rpg_player import Player
+from rpg_item import Item
 from rpg_json_handler import JsonHandler
 from rpg_crafting import CraftingSystem
 from rpg_bot_info import BotInfo
 
-discord_token = "ODY2Mjk2OTA5OTI3Njc3OTcy.YPQf3g.0mM614HgrJND4lAkwv7CMf_W_2o"
+discord_token = ""
+
+try:
+    if not "RPG-BOT" in os.environ:
+        raise KeyError
+
+    discord_token = os.environ['RPG-BOT']
+
+except KeyError:
+    print("ERROR: Could not find environment variable 'RPG-BOT'")
+    sys.exit(1)
 
 users_file = "rpg_users.json"
 
@@ -27,17 +41,17 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message):
-    if message.author == bot.user:
+async def on_message(ctx):
+    if ctx.author == bot.user:
         return
 
-    message.content = message.content.lower()
+    ctx.content = ctx.content.lower()
 
-    BotInfo.set_last_message(message)
+    BotInfo.set_last_message(ctx)
 
-    await find_player(message)
+    await find_player(ctx)
 
-    await bot.process_commands(message)
+    await bot.process_commands(ctx)
 
 
 @bot.event
@@ -62,23 +76,29 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed_var)
 
 
-async def find_player(ctx, other=None):
-    if other is None:
-        for user in JsonHandler.get_users():
-            if user["name"] == str(ctx.author):
-                player = Player(str(ctx.author), user)
-                BotInfo.set_current_player(player)
+async def find_player(ctx):
+    for user in JsonHandler.get_users():
+        if user["name"] == str(ctx.author):
+            player = Player(str(ctx.author), user)
+            BotInfo.set_current_player(player)
 
-                return True
+            return True
 
-        return False
+    return False
 
+
+async def get_player(ctx, player_name):
+
+    player = None
+
+    for user in JsonHandler.get_users():
+        if user["name"] == player_name:
+            player = Player(ctx.author, user=user)
+
+    if not player is None:
+        print("I have found player {}!".format(player.name))
     else:
-        for user in JsonHandler.get_users():
-            if user["name"] == other:
-                return True
-
-        return False
+        print("I have not found any player's with this name")
 
 
 async def create_player(ctx):
@@ -154,28 +174,44 @@ async def split_into_pages(item_list, per_page):
     return final_list
 
 
-@bot.command()
+@bot.command(hidden=True)
 async def start(ctx):
     await create_player(ctx)
 
-@bot.command()
+
+@bot.command(hidden=True)
 async def help(ctx):
 
     cur_page = 0
 
     embed_var = discord.Embed(title="Help",
-                                description="Showing all commands for {}".format(ctx.author.mention),
-                                color=ctx.author.colour)
+                              description="Showing all commands for {}".format(ctx.author.mention),
+                              color=ctx.author.colour)
 
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-    pages_list = await split_into_pages(JsonHandler.get_commands(), 5)
+    start_commands = list(bot.commands)
+    all_commands = []
+
+    for command in start_commands:
+        # Hide all commands with the hidden parameter
+        if command.hidden:
+            continue
+
+        all_commands.append(command)
+
+    pages_list = await split_into_pages(list(all_commands), 5)
 
     if len(pages_list) > 1:
         embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
-    for command in pages_list[cur_page]:
-        embed_var.add_field(name = "`{}`".format(command["name"]), value = "**{}**".format(command["description"]), inline=False)
+    def populate_page(embed):
+        for command in pages_list[cur_page]:
+            embed.add_field(name = "`{}`".format(command.name),
+                                value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
+                                inline=False)
+
+    populate_page(embed_var)
 
     message = await ctx.send(embed = embed_var)
 
@@ -206,8 +242,7 @@ async def help(ctx):
                     
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for command in pages_list[cur_page]:
-                        new_embed.add_field(name = "`{}`".format(command["name"]), value = "{}".format(command["description"]), inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -227,8 +262,7 @@ async def help(ctx):
                     
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for command in pages_list[cur_page]:
-                        new_embed.add_field(name = "`{}`".format(command["name"]), value = "**{}**".format(command["description"]), inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -240,7 +274,11 @@ async def help(ctx):
                 break
                 # ending the loop if user doesn't react after x seconds
 
-@bot.command()
+
+@bot.command(help="Chop a tree an get wood.\nCan only be used if you have an axe",
+            brief="Chop and get wood",
+            usage="{}chop".format(PREFIX),
+            aliases=["c"])
 async def chop(ctx):
     embed_var = discord.Embed(title="Chopping", description=BotInfo.current_player.chop(), color=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -248,7 +286,10 @@ async def chop(ctx):
     await ctx.send(embed=embed_var)
 
 
-@bot.command()
+@bot.command(help="Explore a mine and gather resources.\nCan only be used if you have a pickaxe",
+            brief="Mine and get resources",
+            usage="{}mine".format(PREFIX),
+            aliases=["m"])
 async def mine(ctx):
     embed_var = discord.Embed(title="Mining", description=BotInfo.current_player.mine(), color=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -256,7 +297,10 @@ async def mine(ctx):
     await ctx.send(embed=embed_var)
 
 
-@bot.command()
+@bot.command(help="Dig and gather resources.\nCan only be used if you have a shovel",
+            brief="Dig and get resources",
+            usage="{}dig".format(PREFIX),
+            aliases=["d"])
 async def dig(ctx):
     embed_var = discord.Embed(title="Digging", description=BotInfo.current_player.dig(), color=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -264,7 +308,10 @@ async def dig(ctx):
     await ctx.send(embed=embed_var)
 
 
-@bot.command()
+@bot.command(help="Fish... for fish.\nCan only be used if you have a fishing rod",
+            brief="Fish... for fish",
+            usage="{}fish".format(PREFIX),
+            aliases=["f"])
 async def fish(ctx):
     embed_var = discord.Embed(title="Fishing", description=BotInfo.current_player.fish(), color=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -272,7 +319,10 @@ async def fish(ctx):
     await ctx.send(embed=embed_var)
 
 
-@bot.command()
+@bot.command(help="Hunt and gather resources.\nCan only be used if you have a weapon",
+            brief="Hunt and get resources",
+            usage="{}hunt".format(PREFIX),
+            aliases=["h"])
 async def hunt(ctx):
     embed_var = discord.Embed(title="Hunting", description=BotInfo.current_player.hunt(), colour=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -280,11 +330,14 @@ async def hunt(ctx):
     await ctx.send(embed=embed_var)
 
 
-@bot.command()
-async def inv(ctx, arg=None):
+@bot.command(help="Show the items in your inventory.\nUse the arrows to navigate.",
+            brief="View your inventory",
+            usage="{}inv or {}inventory".format(PREFIX, PREFIX),
+            aliases=["inventory", "items", "viewitems"])
+async def inv(ctx, other_user=None):
     # Show player's inventory
 
-    if arg is None:
+    if other_user is None:
         cur_page = 0
 
         unique_items = {}
@@ -299,6 +352,7 @@ async def inv(ctx, arg=None):
 
             await ctx.send(embed=embed_var)
         else:
+
             for item in BotInfo.current_player.inventory.get_items():
                 if item.get_name() in unique_items:
                     unique_items[item.get_name()] += 1
@@ -307,8 +361,14 @@ async def inv(ctx, arg=None):
 
             pages_list = await split_into_pages(unique_items, 5)
 
-            for item in pages_list[cur_page]:
-                embed_var = embed_var.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+            def populate_page(embed):
+            
+                for item in pages_list[cur_page]:
+                    embed.add_field(name=item,
+                                    value=pages_list[cur_page].get(item),
+                                    inline=False)
+
+            populate_page(embed_var)
 
             if len(pages_list) > 1:
                 embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -341,8 +401,7 @@ async def inv(ctx, arg=None):
                                                           ctx.author.mention), color=ctx.author.colour)
                             new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                            for item in pages_list[cur_page]:
-                                new_embed.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+                            populate_page(new_embed)
 
                             new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -361,8 +420,7 @@ async def inv(ctx, arg=None):
                                                           ctx.author.mention), color=ctx.author.colour)
                             new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                            for item in pages_list[cur_page]:
-                                new_embed.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+                            populate_page(new_embed)
 
                             new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -377,10 +435,11 @@ async def inv(ctx, arg=None):
         embed_var = discord.Embed(title="Information",
                                   description="{} viewing other people's inventory is not available at the moment"
                                   .format(ctx.author.mention), color=ctx.author.colour)
+        
         await ctx.send(embed=embed_var)
 
 
-@bot.command(name="clearinv")
+@bot.command(name="clearinv", hidden=True)
 @commands.check_any(commands.is_owner())
 async def clear_inv(ctx, arg=None):
     if arg is None:
@@ -401,7 +460,11 @@ async def clear_inv(ctx, arg=None):
     await ctx.send(embed=embed_var)
 
 
-@bot.command(name="recipes")
+@bot.command(name="recipes",
+            help="View all the recipes that can be crafted.\nUse the arrows to navigate",
+            brief="View all recipes",
+            usage="{}recipes or {}reps".format(PREFIX, PREFIX),
+            aliases=["reps"])
 async def all_recipes(ctx):
     cur_page = 0
 
@@ -412,23 +475,27 @@ async def all_recipes(ctx):
 
     pages_list = await split_into_pages(JsonHandler.get_recipes(), 4)
 
-    for item in pages_list[cur_page]:
-        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
+    def populate_page(embed):
 
-        unique_items = {}
+        for item in pages_list[cur_page]:
+            recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
 
-        for required_item in item["required-items"]:
-            # Counting the required items
+            unique_items = {}
 
-            if required_item["name"] in unique_items:
-                unique_items[required_item["name"]] += 1
-            else:
-                unique_items[required_item["name"]] = 1
+            for required_item in item["required-items"]:
+                # Counting the required items
 
-        for required_item in unique_items:
-            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
+                if required_item["name"] in unique_items:
+                    unique_items[required_item["name"]] += 1
+                else:
+                    unique_items[required_item["name"]] = 1
 
-        embed_var.add_field(name=item["name"], value=recipe_string, inline=False)
+            for required_item in unique_items:
+                recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
+
+            embed.add_field(name=item["name"], value=recipe_string, inline=False)
+
+    populate_page(embed_var)
 
     if len(pages_list) > 1:
         embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -447,8 +514,7 @@ async def all_recipes(ctx):
         while True:
             try:
                 reaction, user = await bot.wait_for("reaction_add", timeout=30, check=check)
-                # waiting for a reaction to be added - times out after x seconds, 60 in this
-                # example
+                # waiting for a reaction to be added - times out after 30
 
                 if str(reaction.emoji) == "▶️":
 
@@ -463,23 +529,7 @@ async def all_recipes(ctx):
                                               color=ctx.author.colour)
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for item in pages_list[cur_page]:
-                        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
-
-                        unique_items = {}
-
-                        for required_item in item["required-items"]:
-                            # Counting the required items
-
-                            if required_item["name"] in unique_items:
-                                unique_items[required_item["name"]] += 1
-                            else:
-                                unique_items[required_item["name"]] = 1
-
-                        for required_item in unique_items:
-                            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
-
-                        new_embed.add_field(name=item["name"], value=recipe_string, inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -499,23 +549,7 @@ async def all_recipes(ctx):
                                               color=ctx.author.colour)
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for item in pages_list[cur_page]:
-                        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
-
-                        unique_items = {}
-
-                        for required_item in item["required-items"]:
-                            # Counting the required items
-
-                            if required_item["name"] in unique_items:
-                                unique_items[required_item["name"]] += 1
-                            else:
-                                unique_items[required_item["name"]] = 1
-
-                        for required_item in unique_items:
-                            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
-
-                        new_embed.add_field(name=item["name"], value=recipe_string, inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -528,7 +562,11 @@ async def all_recipes(ctx):
                 # ending the loop if user doesn't react after x seconds
 
 
-@bot.command(name="myrecipes")
+@bot.command(name="myrecipes",
+            help="View all the items which you can make\nUse the arrows to navigate",
+            brief="View items you can make",
+            usage="{}myrecipes or {}mr".format(PREFIX, PREFIX),
+            aliases=["mr"])
 async def my_recipes(ctx):
     cur_page = 0
 
@@ -547,18 +585,24 @@ async def my_recipes(ctx):
 
         pages_list = await split_into_pages(craftable_items, 5)
 
-        for craftable_item in pages_list[cur_page]:
-            current_item = None
+        def populate_page(embed):
 
-            for item in JsonHandler.get_recipes():
-                if item["id"] == craftable_item:
-                    current_item = item
-                    break
+            for craftable_item in pages_list[cur_page]:
 
-            embed_var.add_field(name=current_item["name"],
-                                value="`{}` - Quantity: {}".format(current_item["command-name"],
-                                                                   str(craftable_items.get(craftable_item))),
-                                inline=False)
+                command_name = ""
+                current_item = Item.get_item_by_id(craftable_item)
+
+                # Finding the correct command name for the recipe.
+                for item in JsonHandler.get_recipes():
+                    if item["id"] == current_item.get_id():
+                        command_name = item["command-name"]
+
+                embed.add_field(name=current_item.name,
+                                    value="`{}` - Quantity: {}".format(command_name,
+                                    str(craftable_items.get(craftable_item))),
+                                    inline=False)
+
+        populate_page(embed_var)
 
         if len(pages_list) > 1:
             embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -581,26 +625,18 @@ async def my_recipes(ctx):
 
                         cur_page += 1
 
+                        # Rollback page to the first if page counter exceed max pages
                         if cur_page > len(pages_list) - 1:
                             cur_page = 0
 
                         new_embed = discord.Embed(title="Recipes",
                                                   description="Showing items {} can make:".format(ctx.author.mention),
                                                   color=ctx.author.colour)
+
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                        for craftable_item in pages_list[cur_page]:
-                            current_item = None
 
-                            for item in JsonHandler.get_recipes():
-                                if item["id"] == craftable_item:
-                                    current_item = item
-                                    break
-
-                            new_embed.add_field(name=current_item["name"],
-                                                value="`{}` - Quantity: {}".format(current_item["command-name"],
-                                                                                   str(craftable_items.get(
-                                                                                       craftable_item))), inline=False)
+                        populate_page(new_embed)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -611,6 +647,7 @@ async def my_recipes(ctx):
 
                         cur_page -= 1
 
+                        # Roll forward page to the last if page counter is less than zero
                         if cur_page < 0:
                             cur_page = len(pages_list) - 1
 
@@ -619,18 +656,7 @@ async def my_recipes(ctx):
                                                   color=ctx.author.colour)
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                        for craftable_item in pages_list[cur_page]:
-                            current_item = None
-
-                            for item in JsonHandler.get_recipes():
-                                if item["id"] == craftable_item:
-                                    current_item = item
-                                    break
-
-                            new_embed.add_field(name=current_item["name"],
-                                                value="`{}` - Quantity: {}".format(current_item["command-name"],
-                                                                                   str(craftable_items.get(
-                                                                                       craftable_item))), inline=False)
+                        populate_page(new_embed)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -643,7 +669,9 @@ async def my_recipes(ctx):
                     # ending the loop if user doesn't react after x seconds
 
 
-@bot.command()
+@bot.command(help="Craft items with your gathered resources",
+            brief="Craft items",
+            usage="{}craft".format(PREFIX))
 async def craft(ctx, item, amount = None):
 
     if amount is None:
@@ -670,7 +698,44 @@ async def craft_error(ctx, error):
 
     await ctx.send(embed=embed_var)
 
-@bot.command()
+
+@bot.command(name="smeltable",
+            help="View all the items which you can smelt in your inventory.\nUse the pages to navigate",
+            brief="View all your smeltable items",
+            usage="{}smeltable".format(PREFIX))
+async def get_smeltable(ctx):
+
+    #TODO turn smeltable into a page navigation menu
+
+    embed_var = discord.Embed(title="Smeltable Items", description="Showing items that {} can smelt:".format(ctx.author.mention),
+                                color=ctx.author.colour)
+    embed_var = embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+    smeltable_items = BotInfo.crafting_system.get_smeltable_items()
+
+    for smeltable_item in smeltable_items:
+  
+        current_item = Item.get_item_by_id(smeltable_item)
+        smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
+
+        if current_item == None or smelt_item == None:
+            break
+
+        print("Trying to get current item name...")
+        print(current_item.name)
+        print("Done.")
+        
+        embed_var.add_field(name="{} :arrow_right: {}".format(current_item.name, smelt_item.name), 
+                            value="`{}` - Quantity: {}".format(current_item.command_name, smeltable_items.get(smeltable_item)),
+                            inline=False)
+
+
+    await ctx.send(embed=embed_var)
+
+
+@bot.command(help="Smelt your items to create something new",
+            brief="Smelt items",
+            usage="{}smelt".format(PREFIX))
 async def smelt(ctx, item, amount = None):
     embed_var = discord.Embed(title="Smelting", description=BotInfo.crafting_system.smelt_item(item, amount),
                               color=ctx.author.colour)
@@ -690,7 +755,12 @@ async def smelt_error(ctx, error):
 
     await ctx.send(embed=embed_var)
 
-@bot.command(name="addfuel")
+
+@bot.command(name="addfuel",
+            help="Take resources from your inventory to add to your fuel stockpile",
+            brief="Add fuel to your fuel stockpile",
+            usage="{}addfuel or {}af".format(PREFIX, PREFIX),
+            aliases=["af"])
 async def add_fuel(ctx, item):
     
     embed_var = discord.Embed(title="Adding Fuel", description=BotInfo.crafting_system.add_fuel(item),
@@ -713,7 +783,12 @@ async def add_fuel_error(ctx, error):
 
     await ctx.send(embed=embed_var)
 
-@bot.command(name="stats")
+
+@bot.command(name="stats",
+            help="Use this command to show key statistics about the player.",
+            brief="Show info about the player",
+            usage="{}stats or {}statistics".format(PREFIX, PREFIX),
+            aliases=["statistics"])
 async def statistics(ctx):
     
     embed_var = discord.Embed(title="Statistics", description="Showing stats for {}".format(ctx.author.mention),
@@ -728,5 +803,6 @@ async def statistics(ctx):
                         inline=True)
 
     await ctx.send(embed=embed_var)
+
 
 bot.run(discord_token)
