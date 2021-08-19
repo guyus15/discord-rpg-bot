@@ -735,32 +735,101 @@ async def craft_error(ctx, error):
             usage="{}smeltable".format(PREFIX))
 async def get_smeltable(ctx):
 
-    #TODO turn smeltable into a page navigation menu
+    cur_page = 0
+
+    smeltable_items = BotInfo.crafting_system.get_smeltable_items()
 
     embed_var = discord.Embed(title="Smeltable Items", description="Showing items that {} can smelt:".format(ctx.author.mention),
                                 color=ctx.author.colour)
     embed_var = embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-    smeltable_items = BotInfo.crafting_system.get_smeltable_items()
+    if len(smeltable_items) == 0:
+        embed_var.add_field(name="No items", value="**You do not have the resources to smelt any items**")
 
-    for smeltable_item in smeltable_items:
-  
-        current_item = Item.get_item_by_id(smeltable_item)
-        smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
+        await ctx.send(embed=embed_var)
+        return
 
-        if current_item == None or smelt_item == None:
-            break
+    pages_list = await split_into_pages(smeltable_items, 5)
 
-        print("Trying to get current item name...")
-        print(current_item.name)
-        print("Done.")
-        
-        embed_var.add_field(name="{} :arrow_right: {}".format(current_item.name, smelt_item.name), 
-                            value="`{}` - Quantity: {}".format(current_item.command_name, smeltable_items.get(smeltable_item)),
-                            inline=False)
+    def populate_page(embed):
+        for smeltable_item in pages_list[cur_page]:
+            
+            current_item = Item.get_item_by_id(smeltable_item)
+            smelt_item = Item.get_item_by_id(current_item.get_smelted_item_id())
+
+            if current_item == None or smelt_item == None:
+                break
+            
+            embed.add_field(name="{} :arrow_right: {}".format(current_item.name, smelt_item.name), 
+                                value="`{}` - Quantity: {}".format(current_item.command_name, smeltable_items.get(smeltable_item)),
+                                inline=False)
 
 
-    await ctx.send(embed=embed_var)
+    populate_page(embed_var)
+
+    if len(pages_list) > 1:
+        embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
+
+    message = await ctx.send(embed=embed_var)
+
+    if len(pages_list) > 1:
+        await message.add_reaction("◀️")
+        await message.add_reaction("▶️")
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+            # This makes sure nobody except the command sender can interact with the "menu"
+
+        while True:
+            try:
+                reaction, user = await bot.wait_for("reaction_add", timeout=30, check=check)
+
+                if str(reaction.emoji) == "▶️":
+
+                    cur_page += 1
+
+                    # Rollback page to the first if page counter exceed max pages
+                    if cur_page > len(pages_list) - 1:
+                        cur_page = 0
+                        
+                    new_embed = discord.Embed(title="Smeltable Items",
+                                              description="Showing items that {} can smelt:".format(ctx.author.mention),
+                                              color=ctx.author.colour)
+
+                    new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+                    populate_page(new_embed)
+
+                    new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
+
+                    await message.edit(embed=new_embed)
+                    await message.remove_reaction(reaction, user)
+
+                elif str(reaction.emoji) == "◀️":
+
+                    cur_page -= 1
+
+                    # Roll forward page to the last if page counter is less than zero
+                    if cur_page < 0:
+                        cur_page = len(pages_list) - 1
+
+                    new_embed = discord.Embed(title="Smeltable Items",
+                                              description="Showing items {} that can smelt:".format(ctx.author.mention),
+                                              color=ctx.author.colour)
+
+                    new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+
+                    populate_page(new_embed)
+
+                    new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
+
+                    await message.edit(embed=new_embed)
+                    await message.remove_reaction(reaction, user)
+
+            except asyncio.TimeoutError:
+                await message.delete()
+                break
+                # ending the loop if user doesn't react after x seconds
 
 
 @bot.command(help="Smelt your items to create something new",
