@@ -243,8 +243,8 @@
             "required-items":
             [
                 {"id": "3:1", "name": "Birch Wood Plank"},
-                {"id":"12", "name": "Stick"},
-                {"id":"12", "name": "Stick"}   
+                {"id": "12", "name": "Stick"},
+                {"id": "12", "name": "Stick"}   
             ],
             "craft-required": "table"
         },
@@ -255,8 +255,8 @@
             "required-items":
             [
                 {"id": "3:2", "name": "Ash Wood Plank"},
-                {"id":"12", "name": "Stick"},
-                {"id":"12", "name": "Stick"}   
+                {"id": "12", "name": "Stick"},
+                {"id": "12", "name": "Stick"}   
             ],
             "craft-required": "table"
         },
@@ -291,8 +291,8 @@
             "required-items":
             [
                 {"id": "10", "name": "Gold"},
-                {"id":"12", "name": "Stick"},
-                {"id":"12", "name": "Stick"}   
+                {"id": "12", "name": "Stick"},
+                {"id": "12", "name": "Stick"}   
             ],
             "craft-required": "table"
         },
@@ -310,7 +310,7 @@
             "craft-required": "none"
         },
         {
-            "id": "20:1",
+            "id": "20",
             "name": "Crafting Table",
             "command-name": "birchcrafttable",
             "required-items":
@@ -323,7 +323,7 @@
             "craft-required": "none"
         },
         {
-            "id": "20:2",
+            "id": "20",
             "name": "Crafting Table",
             "command-name": "ashcrafttable",
             "required-items":
