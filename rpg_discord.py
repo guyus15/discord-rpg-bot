@@ -4,6 +4,7 @@ import os
 import sys
 
 from discord.ext import commands
+from discord.ext.commands.core import command
 
 from rpg_player import Player
 from rpg_item import Item
@@ -204,10 +205,13 @@ async def help(ctx):
     if len(pages_list) > 1:
         embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
-    for command in pages_list[cur_page]:
-        embed_var.add_field(name = "`{}`".format(command.name),
-        value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
-        inline=False)
+    def populate_page(embed):
+        for command in pages_list[cur_page]:
+            embed.add_field(name = "`{}`".format(command.name),
+                                value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
+                                inline=False)
+
+    populate_page(embed_var)
 
     message = await ctx.send(embed = embed_var)
 
@@ -238,10 +242,7 @@ async def help(ctx):
                     
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for command in pages_list[cur_page]:
-                        new_embed.add_field(name = "`{}`".format(command.name),
-                                            value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
-                                            inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -261,10 +262,7 @@ async def help(ctx):
                     
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for command in pages_list[cur_page]:
-                        new_embed.add_field(name = "`{}`".format(command.name),
-                                            value = "**{}**\nUsage: `{}`".format(command.help, command.usage),
-                                            inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -354,6 +352,7 @@ async def inv(ctx, other_user=None):
 
             await ctx.send(embed=embed_var)
         else:
+
             for item in BotInfo.current_player.inventory.get_items():
                 if item.get_name() in unique_items:
                     unique_items[item.get_name()] += 1
@@ -362,8 +361,14 @@ async def inv(ctx, other_user=None):
 
             pages_list = await split_into_pages(unique_items, 5)
 
-            for item in pages_list[cur_page]:
-                embed_var = embed_var.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+            def populate_page(embed):
+            
+                for item in pages_list[cur_page]:
+                    embed.add_field(name=item,
+                                    value=pages_list[cur_page].get(item),
+                                    inline=False)
+
+            populate_page(embed_var)
 
             if len(pages_list) > 1:
                 embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -396,8 +401,7 @@ async def inv(ctx, other_user=None):
                                                           ctx.author.mention), color=ctx.author.colour)
                             new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                            for item in pages_list[cur_page]:
-                                new_embed.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+                            populate_page(new_embed)
 
                             new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -416,8 +420,7 @@ async def inv(ctx, other_user=None):
                                                           ctx.author.mention), color=ctx.author.colour)
                             new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                            for item in pages_list[cur_page]:
-                                new_embed.add_field(name=item, value=pages_list[cur_page].get(item), inline=False)
+                            populate_page(new_embed)
 
                             new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -472,23 +475,27 @@ async def all_recipes(ctx):
 
     pages_list = await split_into_pages(JsonHandler.get_recipes(), 4)
 
-    for item in pages_list[cur_page]:
-        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
+    def populate_page(embed):
 
-        unique_items = {}
+        for item in pages_list[cur_page]:
+            recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
 
-        for required_item in item["required-items"]:
-            # Counting the required items
+            unique_items = {}
 
-            if required_item["name"] in unique_items:
-                unique_items[required_item["name"]] += 1
-            else:
-                unique_items[required_item["name"]] = 1
+            for required_item in item["required-items"]:
+                # Counting the required items
 
-        for required_item in unique_items:
-            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
+                if required_item["name"] in unique_items:
+                    unique_items[required_item["name"]] += 1
+                else:
+                    unique_items[required_item["name"]] = 1
 
-        embed_var.add_field(name=item["name"], value=recipe_string, inline=False)
+            for required_item in unique_items:
+                recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
+
+            embed.add_field(name=item["name"], value=recipe_string, inline=False)
+
+    populate_page(embed_var)
 
     if len(pages_list) > 1:
         embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -507,8 +514,7 @@ async def all_recipes(ctx):
         while True:
             try:
                 reaction, user = await bot.wait_for("reaction_add", timeout=30, check=check)
-                # waiting for a reaction to be added - times out after x seconds, 60 in this
-                # example
+                # waiting for a reaction to be added - times out after 30
 
                 if str(reaction.emoji) == "▶️":
 
@@ -523,23 +529,7 @@ async def all_recipes(ctx):
                                               color=ctx.author.colour)
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for item in pages_list[cur_page]:
-                        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
-
-                        unique_items = {}
-
-                        for required_item in item["required-items"]:
-                            # Counting the required items
-
-                            if required_item["name"] in unique_items:
-                                unique_items[required_item["name"]] += 1
-                            else:
-                                unique_items[required_item["name"]] = 1
-
-                        for required_item in unique_items:
-                            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
-
-                        new_embed.add_field(name=item["name"], value=recipe_string, inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -559,23 +549,7 @@ async def all_recipes(ctx):
                                               color=ctx.author.colour)
                     new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                    for item in pages_list[cur_page]:
-                        recipe_string = "_**Command name**_: `{}`\n_**Required items**_:\n".format(item["command-name"])
-
-                        unique_items = {}
-
-                        for required_item in item["required-items"]:
-                            # Counting the required items
-
-                            if required_item["name"] in unique_items:
-                                unique_items[required_item["name"]] += 1
-                            else:
-                                unique_items[required_item["name"]] = 1
-
-                        for required_item in unique_items:
-                            recipe_string += "+ {} - {}\n".format(required_item, unique_items.get(required_item))
-
-                        new_embed.add_field(name=item["name"], value=recipe_string, inline=False)
+                    populate_page(new_embed)
 
                     new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -611,14 +585,24 @@ async def my_recipes(ctx):
 
         pages_list = await split_into_pages(craftable_items, 5)
 
-        for craftable_item in pages_list[cur_page]:
+        def populate_page(embed):
 
-            current_item = Item.get_item_by_id(craftable_item)
+            for craftable_item in pages_list[cur_page]:
 
-            embed_var.add_field(name=current_item.name,
-                                value="`{}` - Quantity: {}".format(current_item.command_name,
-                                                                   str(craftable_items.get(craftable_item))),
-                                                                   inline=False)
+                command_name = ""
+                current_item = Item.get_item_by_id(craftable_item)
+
+                # Finding the correct command name for the recipe.
+                for item in JsonHandler.get_recipes():
+                    if item["id"] == current_item.get_id():
+                        command_name = item["command-name"]
+
+                embed.add_field(name=current_item.name,
+                                    value="`{}` - Quantity: {}".format(command_name,
+                                    str(craftable_items.get(craftable_item))),
+                                    inline=False)
+
+        populate_page(embed_var)
 
         if len(pages_list) > 1:
             embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -641,22 +625,18 @@ async def my_recipes(ctx):
 
                         cur_page += 1
 
+                        # Rollback page to the first if page counter exceed max pages
                         if cur_page > len(pages_list) - 1:
                             cur_page = 0
 
                         new_embed = discord.Embed(title="Recipes",
                                                   description="Showing items {} can make:".format(ctx.author.mention),
                                                   color=ctx.author.colour)
+
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                        for craftable_item in pages_list[cur_page]:
-                          
-                            current_item = Item.get_item_by_id(craftable_item)
 
-                            new_embed.add_field(name=current_item.name,
-                                                value="`{}` - Quantity: {}".format(current_item.command_name,
-                                                                                    str(craftable_items.get(craftable_item))),
-                                                                                    inline=False)
+                        populate_page(new_embed)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -667,6 +647,7 @@ async def my_recipes(ctx):
 
                         cur_page -= 1
 
+                        # Roll forward page to the last if page counter is less than zero
                         if cur_page < 0:
                             cur_page = len(pages_list) - 1
 
@@ -675,14 +656,7 @@ async def my_recipes(ctx):
                                                   color=ctx.author.colour)
                         new_embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-                        for craftable_item in pages_list[cur_page]:
-
-                            current_item = Item.get_item_by_id(craftable_item)
-
-                            new_embed.add_field(name=current_item.name,
-                                                value="`{}` - Quantity: {}".format(current_item.command_name,
-                                                                                    str(craftable_items.get(craftable_item))),
-                                                                                    inline=False)
+                        populate_page(new_embed)
 
                         new_embed.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
 
@@ -730,6 +704,9 @@ async def craft_error(ctx, error):
             brief="View all your smeltable items",
             usage="{}smeltable".format(PREFIX))
 async def get_smeltable(ctx):
+
+    #TODO turn smeltable into a page navigation menu
+
     embed_var = discord.Embed(title="Smeltable Items", description="Showing items that {} can smelt:".format(ctx.author.mention),
                                 color=ctx.author.colour)
     embed_var = embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
