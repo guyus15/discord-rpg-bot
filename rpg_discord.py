@@ -173,7 +173,7 @@ async def split_into_pages(item_list, per_page):
     return final_list
 
 
-@bot.command()
+@bot.command(hidden=True)
 async def start(ctx):
     await create_player(ctx)
 
@@ -189,7 +189,17 @@ async def help(ctx):
 
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-    pages_list = await split_into_pages(list(bot.commands), 5)
+    start_commands = list(bot.commands)
+    all_commands = []
+
+    for command in start_commands:
+        # Hide all commands with the hidden parameter
+        if command.hidden:
+            continue
+
+        all_commands.append(command)
+
+    pages_list = await split_into_pages(list(all_commands), 5)
 
     if len(pages_list) > 1:
         embed_var.set_footer(text="Page {}/{}".format(str(cur_page + 1), str(len(pages_list))))
@@ -450,7 +460,7 @@ async def clear_inv(ctx, arg=None):
 @bot.command(name="recipes",
             help="View all the recipes that can be crafted.\nUse the arrows to navigate",
             brief="View all recipes",
-            usage="{}recipes/{}reps".format(PREFIX, PREFIX),
+            usage="{}recipes or {}reps".format(PREFIX, PREFIX),
             aliases=["reps"])
 async def all_recipes(ctx):
     cur_page = 0
@@ -581,7 +591,7 @@ async def all_recipes(ctx):
 @bot.command(name="myrecipes",
             help="View all the items which you can make\nUse the arrows to navigate",
             brief="View items you can make",
-            usage="{}myrecipes/{}myreps".format(PREFIX, PREFIX),
+            usage="{}myrecipes or {}myreps".format(PREFIX, PREFIX),
             aliases=["myreps"])
 async def my_recipes(ctx):
     cur_page = 0
@@ -764,7 +774,7 @@ async def smelt_error(ctx, error):
 @bot.command(name="addfuel",
             help="Take resources from your inventory to add to your fuel stockpile",
             brief="Add fuel to your fuel stockpile",
-            usage="{}addfuel/{}af".format(PREFIX, PREFIX),
+            usage="{}addfuel or {}af".format(PREFIX, PREFIX),
             aliases=["af"])
 async def add_fuel(ctx, item):
     
@@ -792,7 +802,7 @@ async def add_fuel_error(ctx, error):
 @bot.command(name="stats",
             help="Use this command to show key statistics about the player.",
             brief="Show info about the player",
-            usage="{}stats/{}statistics".format(PREFIX, PREFIX),
+            usage="{}stats or {}statistics".format(PREFIX, PREFIX),
             aliases=["statistics"])
 async def statistics(ctx):
     
