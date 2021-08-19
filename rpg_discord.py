@@ -18,10 +18,10 @@ try:
     if not "RPG_BOT" in os.environ:
         raise KeyError
 
-    discord_token = os.environ['RPG-BOT']
+    discord_token = os.environ['RPG_BOT']
 
 except KeyError:
-    print("ERROR: Could not find environment variable 'RPG-BOT'")
+    print("ERROR: Could not find environment variable 'RPG_BOT'")
     sys.exit(1)
 
 users_file = "rpg_users.json"
