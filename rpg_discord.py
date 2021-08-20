@@ -362,7 +362,7 @@ async def hunt(ctx):
 
 @bot.command(help="Show the items in your inventory.\nUse the arrows to navigate.",
             brief="View your inventory",
-            usage="{}inv or {}inventory".format(PREFIX, PREFIX),
+            usage="{}inv /{}inventory".format(PREFIX, PREFIX),
             aliases=["inventory", "items", "viewitems"])
 async def inv(ctx, other_user=None):
     # Show player's inventory
@@ -496,7 +496,7 @@ async def clear_inv(ctx, arg=None):
 @bot.command(name="recipes",
             help="View all the recipes that can be crafted.\nUse the arrows to navigate",
             brief="View all recipes",
-            usage="{}recipes or {}reps".format(PREFIX, PREFIX),
+            usage="{}recipes/{}reps".format(PREFIX, PREFIX),
             aliases=["reps"])
 async def all_recipes(ctx):
     cur_page = 0
@@ -598,7 +598,7 @@ async def all_recipes(ctx):
 @bot.command(name="myrecipes",
             help="View all the items which you can make\nUse the arrows to navigate",
             brief="View items you can make",
-            usage="{}myrecipes or {}mr".format(PREFIX, PREFIX),
+            usage="{}myrecipes/{}mr".format(PREFIX, PREFIX),
             aliases=["mr"])
 async def my_recipes(ctx):
     cur_page = 0
@@ -696,7 +696,7 @@ async def my_recipes(ctx):
 
 @bot.command(help="Craft items with your gathered resources",
             brief="Craft items",
-            usage="{}craft".format(PREFIX))
+            usage="{}craft <item> <(optional) amount>".format(PREFIX))
 async def craft(ctx, item, amount = None):
 
     if amount is None:
@@ -718,8 +718,9 @@ async def craft_error(ctx, error):
 
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title="Crafting",
-                                  description="{} incorrect use of command. Please use `{}craft <item name> <(optional) amount>`.".format(
-                                      ctx.author.mention, PREFIX), color=ctx.author.colour)
+                                  description="{} incorrect use of command. Please use `{}craft <item> <(optional) amount>`.".format(
+                                      ctx.author.mention, PREFIX),
+                                      color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
 
@@ -829,7 +830,7 @@ async def get_smeltable(ctx):
 
 @bot.command(help="Smelt your items to create something new",
             brief="Smelt items",
-            usage="{}smelt".format(PREFIX))
+            usage="{}smelt <item> <(optional) amount>".format(PREFIX))
 async def smelt(ctx, item, amount = None):
     
     embed_var = None
@@ -852,8 +853,9 @@ async def smelt_error(ctx, error):
 
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title = "Smelting",
-                                    description="{} incorrect use of command. Please use `{}smelt <item name> <(optional) amount>`".format(
-                                        ctx.author.mention, PREFIX), color=ctx.author.colour)
+                                    description="{} incorrect use of command. Please use `{}smelt <item> <(optional) amount>`".format(
+                                    ctx.author.mention, PREFIX), 
+                                    color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
 
@@ -861,7 +863,7 @@ async def smelt_error(ctx, error):
 @bot.command(name="addfuel",
             help="Take resources from your inventory to add to your fuel stockpile",
             brief="Add fuel to your fuel stockpile",
-            usage="{}addfuel or {}af".format(PREFIX, PREFIX),
+            usage="{}addfuel/{}af <item> <(optional) amount>".format(PREFIX, PREFIX),
             aliases=["af"])
 async def add_fuel(ctx, item, amount=None):
     
@@ -887,8 +889,9 @@ async def add_fuel_error(ctx, error):
 
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title="Adding Fuel",
-                                  description="{} incorrect use of command. Please use `{}addfuel <item name>`.".format(
-                                      ctx.author.mention, PREFIX), color=ctx.author.colour)
+                                  description="{} incorrect use of command. Please use `{}addfuel/{}af <item> <(optional) amount>`".format(
+                                      ctx.author.mention, PREFIX, PREFIX),
+                                      color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
 
@@ -896,7 +899,7 @@ async def add_fuel_error(ctx, error):
 @bot.command(name="stats",
             help="Use this command to show key statistics about the player.",
             brief="Show info about the player",
-            usage="{}stats or {}statistics".format(PREFIX, PREFIX),
+            usage="{}stats/{}statistics".format(PREFIX, PREFIX),
             aliases=["statistics"])
 async def statistics(ctx):
     
