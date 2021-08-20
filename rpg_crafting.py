@@ -239,7 +239,7 @@ class CraftingSystem:
                 if smelt_item.get_fuel_required() > BotInfo.current_player.get_fuel_amount():
                     return f"**{BotInfo.last_message_received.author.mention} you do not have enough fuel to smelt this item.**"
 
-                item_to_add = BotInfo.current_player.get_item_by_id(smelt_item.get_smelted_item_id())
+                item_to_add = Item.get_item_by_id(smelt_item.get_smelted_item_id())
 
                 BotInfo.current_player.inventory.add_item(item_to_add)
 
