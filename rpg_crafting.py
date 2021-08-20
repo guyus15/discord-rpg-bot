@@ -113,6 +113,7 @@ class CraftingSystem:
         for recipes_item in JsonHandler.get_recipes():
             for item in CraftingSystem.get_craftable_items():
                 if recipes_item["id"] == item["id"]:
+                    recipes_item["quantity"] = item["quantity"]
                     items_can_craft.append(recipes_item)
 
         for item in items_can_craft:
@@ -132,7 +133,7 @@ class CraftingSystem:
                 elif int(amount) <= 0:
                     return f"**{BotInfo.last_message_received.author.mention} the amount specified must be a positive number.**"
 
-                elif int(amount) > CraftingSystem.get_craftable_items()[craft_item["id"]]:
+                elif int(amount) > craft_item["quantity"]:
                     return f"**{BotInfo.last_message_received.author.mention} you do not have enough resources to craft this many items.**"
                 
                 else:
