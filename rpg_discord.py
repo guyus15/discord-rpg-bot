@@ -621,18 +621,10 @@ async def my_recipes(ctx):
         def populate_page(embed):
 
             for craftable_item in pages_list[cur_page]:
-
-                command_name = ""
-                current_item = Item.get_item_by_id(craftable_item)
-
-                # Finding the correct command name for the recipe.
-                for item in JsonHandler.get_recipes():
-                    if item["id"] == current_item.get_id():
-                        command_name = item["command-name"]
-
-                embed.add_field(name=current_item.name,
-                                    value="`{}` - Quantity: {}".format(command_name,
-                                    str(craftable_items.get(craftable_item))),
+    
+                embed.add_field(name=craftable_item["name"],
+                                    value="`{}` - Quantity: {}".format(craftable_item["command-name"],
+                                    craftable_item["quantity"]),
                                     inline=False)
 
         populate_page(embed_var)
@@ -839,8 +831,16 @@ async def get_smeltable(ctx):
             brief="Smelt items",
             usage="{}smelt".format(PREFIX))
 async def smelt(ctx, item, amount = None):
-    embed_var = discord.Embed(title="Smelting", description=BotInfo.crafting_system.smelt_item(item, amount),
-                              color=ctx.author.colour)
+    
+    embed_var = None
+
+    if amount is None:
+        embed_var = discord.Embed(title="Smelting", description=BotInfo.crafting_system.smelt_item(item),
+                                color=ctx.author.colour)
+    else:
+        embed_var = discord.Embed(title="Smelting", description=BotInfo.crafting_system.smelt_item(item, amount),
+                                color=ctx.author.colour)
+
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
     await ctx.send(embed=embed_var)

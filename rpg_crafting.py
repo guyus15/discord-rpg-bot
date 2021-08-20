@@ -17,7 +17,7 @@ class CraftingSystem:
 
         has_crafting_table = False
 
-        craftable_items = {}
+        craftable_items = []
         unique_items = {}
 
         for item in BotInfo.current_player.inventory.get_items():
@@ -80,7 +80,14 @@ class CraftingSystem:
 
                     current_items[recipe_item] -= unique_recipe_items.get(recipe_item)
 
-                craftable_items[recipe["id"]] = num_can_make
+                craftable_item = {}
+
+                craftable_item["id"] = recipe["id"]
+                craftable_item["name"] = recipe["name"]
+                craftable_item["quantity"] = num_can_make
+                craftable_item["command-name"] = recipe["command-name"]
+
+                craftable_items.append(craftable_item)
 
         return craftable_items
 
@@ -101,14 +108,14 @@ class CraftingSystem:
         if not craft_item_found:
             return f"**{BotInfo.last_message_received.author.mention} could not find an item with the name `{command_name}`.**"
 
-        craftable_items = []
+        items_can_craft = []
 
         for recipes_item in JsonHandler.get_recipes():
             for item in CraftingSystem.get_craftable_items():
-                if recipes_item["id"] == item:
-                    craftable_items.append(recipes_item)
+                if recipes_item["id"] == item["id"]:
+                    items_can_craft.append(recipes_item)
 
-        for item in craftable_items:
+        for item in items_can_craft:
             if item["command-name"] == command_name:
                 craft_item = item
                 break
@@ -172,6 +179,7 @@ class CraftingSystem:
                     smeltable_items[item.get_id()] = 1
 
         return smeltable_items
+
 
 
     @staticmethod
@@ -326,4 +334,9 @@ class CraftingSystem:
             return "**{} you do not have the resources to add this item to your fuel.**".format(BotInfo.last_message_received.author.mention)
 
 
-            
+    @staticmethod
+    def get_item_command_name(id):
+
+        for item in JsonHandler.get_recipes():
+            if item["id"] == str(id):
+                return item["command"]
