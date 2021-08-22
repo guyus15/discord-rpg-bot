@@ -339,7 +339,7 @@
             "is-weapon": "no",
             "is-fuel": "no",
             "fuel-amount": 0,
-            "is-smeltable": "no",
+            "is-smeltable": "yes",
             "fuel-required": 2,
             "smelted-item": "11:3",
             "is-food": "yes",
