@@ -297,6 +297,19 @@
             "craft-required": "table"
         },
         {
+            "id": "17",
+            "name": "Fishing Rod",
+            "command-name": "fishingrod",
+            "required-items":
+            [
+                {"id": "50", "name": "String"},
+                {"id": "12", "name": "Stick"},
+                {"id": "12", "name": "Stick"},
+                {"id": "12", "name": "Stick"}   
+            ],
+            "craft-required": "table"
+        },
+        {
             "id": "20",
             "name": "Crafting Table",
             "command-name": "oakcrafttable",

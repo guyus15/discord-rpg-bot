@@ -272,7 +272,7 @@ class Player:
         can_fish = False        
 
         for item in self.inventory.get_items():
-            if item.get_tool_type() == "pickaxe":
+            if item.get_tool_type() == "fishingrod":
                 can_fish = True
 
         if can_fish == False:
