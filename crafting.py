@@ -137,17 +137,15 @@ class CraftingSystem:
 
                 item_to_add = None
 
-                for item in items:
-                    if item["id"] == craft_item["id"]:
-                        item_to_add = Item(item)
-                        BotInfo.current_player.inventory.add_item(item_to_add)
-                        break
+                item_to_add = Item.get_item_by_id(craft_item["id"])
 
                 if item_to_add is None:
                     print("Could not find the crafted item in the items list.")
                     return "This is broken. Inform my master Guigger"
+
+                BotInfo.current_player.inventory.add_item(item_to_add)
                     
-            BotInfo.current_player.save_json()
+            JsonHandler.save_json(BotInfo.current_player)
 
             if loop_amount > 1:
                 return "{} you have successfully crafted **{} {}s**".format(BotInfo.last_message_received.author.mention, str(loop_amount), item["name"])
@@ -240,7 +238,7 @@ class CraftingSystem:
 
                 BotInfo.current_player.inventory.remove_item(smelt_item.get_id())
 
-            BotInfo.current_player.save_json()
+            JsonHandler.save_json(BotInfo.current_player)
         
             if loop_amount > 1:
                 return "{} you have successfully smelted **{} {}** into **{}**".format(BotInfo.last_message_received.author.mention, str(loop_amount), smelt_item.get_name(), item_to_add.get_name())
@@ -316,7 +314,7 @@ class CraftingSystem:
                 BotInfo.current_player.add_fuel(item_to_add.get_fuel_amount())
                 BotInfo.current_player.inventory.remove_item(item_to_add.get_id())
 
-            BotInfo.current_player.save_json()
+            JsonHandler.save_json(BotInfo.current_player)
 
             if loop_amount > 1:
                 return "{} you have successfully added **{} {}** to your fuel".format(BotInfo.last_message_received.author.mention, str(loop_amount), item_to_add.get_name())
