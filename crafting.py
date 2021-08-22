@@ -304,7 +304,7 @@ class CraftingSystem:
                     return f"**{BotInfo.last_message_received.author.mention} the amount specified must be a positive number.**"
 
                 elif int(amount) > CraftingSystem.get_fuel_items()[fuel_item]:
-                    return f"**{BotInfo.last_message_received.author.mention} you do not have enough resources to craft this many items.**"
+                    return f"**{BotInfo.last_message_received.author.mention} you do not have enough resources to add this many items to your fuel.**"
                 
                 else:
                     loop_amount = int(amount)
