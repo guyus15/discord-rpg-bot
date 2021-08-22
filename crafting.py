@@ -115,6 +115,8 @@ class CraftingSystem:
 
         if not craft_item is None:
 
+            print("Craft item!: {}".format(craft_item))
+
             # The amount of times to craft an item
             loop_amount = 1
 
@@ -148,9 +150,9 @@ class CraftingSystem:
             JsonHandler.save_json(BotInfo.current_player)
 
             if loop_amount > 1:
-                return "{} you have successfully crafted **{} {}s**".format(BotInfo.last_message_received.author.mention, str(loop_amount), item["name"])
+                return "{} you have successfully crafted **{} {}s**".format(BotInfo.last_message_received.author.mention, str(loop_amount), craft_item["name"])
             else:
-                return "{} you have successfully crafted **{}**".format(BotInfo.last_message_received.author.mention, item["name"])
+                return "{} you have successfully crafted **{}**".format(BotInfo.last_message_received.author.mention, craft_item["name"])
 
         else:
             return "**{} you do not have the resources to craft this item.**".format(BotInfo.last_message_received.author.mention)
