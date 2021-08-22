@@ -4,31 +4,29 @@ import os
 import sys
 
 from discord.ext import commands
-from discord.ext.commands.core import command
 
-from rpg_player import Player
-from rpg_item import Item
-from rpg_json_handler import JsonHandler
-from rpg_crafting import CraftingSystem
-from rpg_bot_info import BotInfo
+from player import Player
+from item import Item
+from json_handler import JsonHandler
+from crafting import CraftingSystem
+from bot_info import BotInfo
+from constants import Constants
 
+# Finding the bot's discord token from environment variables
 discord_token = ""
 
 try:
-    if not "RPG_BOT" in os.environ:
+    if not Constants.ENV_VAR in os.environ:
         raise KeyError
 
-    discord_token = os.environ['RPG_BOT']
+    discord_token = os.environ[Constants.ENV_VAR]
 
 except KeyError:
-    print("ERROR: Could not find environment variable 'RPG_BOT'")
+    print(f"ERROR: Could not find environment variable '{Constants.ENV_VAR}'")
     sys.exit(1)
 
-users_file = "rpg_users.json"
-
-PREFIX = "r"
-
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, help_command=None)
+# Creating with following arguments
+bot = commands.Bot(command_prefix=Constants.PREFIX, case_insensitive=True, help_command=None)
 
 @bot.event
 async def on_ready():
@@ -37,7 +35,7 @@ async def on_ready():
 
     print('Logged on as {0}!'.format(bot.user))
 
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="your every move."))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=Constants.BOT_PRESENCE))
 
 
 @bot.event
@@ -64,12 +62,12 @@ async def on_command_error(ctx, error):
 
         if player_found:
             embed_var = discord.Embed(title="Information",
-                                      description="Could not find this command. Try using `{}help`".format(PREFIX),
+                                      description="Could not find this command. Try using `{}help`".format(Constants.PREFIX),
                                       color=ctx.author.color)
         else:
             embed_var = discord.Embed(title="Information",
-                                      description="It looks like you are new. Use `{}start` to begin the RPG".format(
-                                          PREFIX), color=ctx.author.color)
+                                      description="It looks like you are new. Use `{}start` to begin the RPG".format(Constants.PREFIX),
+                                      color=ctx.author.color)
 
         embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
@@ -107,10 +105,10 @@ async def create_player(ctx):
     if not player_found:
         new_player = Player(ctx.author)
 
-        with open(users_file, "r") as file:
+        with open(Constants.USERS_FILE, "r") as file:
             file_string = str(file.read())
 
-        with open(users_file, "w+") as file:
+        with open(Constants.USERS_FILE, "w+") as file:
             file_string = file_string.replace("\n", "")[:-2]
 
             file_string += ", " + new_player.player_to_json() + "]}"
@@ -119,8 +117,8 @@ async def create_player(ctx):
 
         embed_var = discord.Embed(title="Information",
                                   description="**Welcome to RPGBot {}.**\n"
-                                              "For help use '{}help' ro list all commands."
-                                  .format(ctx.author.mention, PREFIX), color=ctx.author.colour)
+                                              "For help use '{}help' ro list all commands.".format(ctx.author.mention, Constants.PREFIX),
+                                              color=ctx.author.colour)
     else:
         embed_var = discord.Embed(title="Information",
                                   description="**You already have an account, {}**".format(ctx.author.mention),
@@ -203,7 +201,7 @@ async def help(ctx, command_name=None):
 
         if found_command is None:
             embed_var = discord.Embed(title="Help",
-                                    description="**{} Could not find command with name** `{}`\nType `{}help` to view all commands".format(ctx.author.mention, command_name, PREFIX),
+                                    description="**{} Could not find command with name** `{}`\nType `{}help` to view all commands".format(ctx.author.mention, command_name, Constants.PREFIX),
                                     color=ctx.author.colour)
             embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed_var)
@@ -307,7 +305,7 @@ async def help(ctx, command_name=None):
 
 @bot.command(help="Chop a tree and gather wood.\nCan only be used if you have an axe",
             brief="Chop and get wood",
-            usage="{}chop".format(PREFIX),
+            usage="{}chop".format(Constants.PREFIX),
             aliases=["c"])
 async def chop(ctx):
     embed_var = discord.Embed(title="Chopping", description=BotInfo.current_player.chop(), color=ctx.author.colour)
@@ -318,7 +316,7 @@ async def chop(ctx):
 
 @bot.command(help="Explore a mine and gather resources.\nCan only be used if you have a pickaxe",
             brief="Mine and get resources",
-            usage="{}mine".format(PREFIX),
+            usage="{}mine".format(Constants.PREFIX),
             aliases=["m"])
 async def mine(ctx):
     embed_var = discord.Embed(title="Mining", description=BotInfo.current_player.mine(), color=ctx.author.colour)
@@ -329,7 +327,7 @@ async def mine(ctx):
 
 @bot.command(help="Dig and gather resources.\nCan only be used if you have a shovel",
             brief="Dig and get resources",
-            usage="{}dig".format(PREFIX),
+            usage="{}dig".format(Constants.PREFIX),
             aliases=["d"])
 async def dig(ctx):
     embed_var = discord.Embed(title="Digging", description=BotInfo.current_player.dig(), color=ctx.author.colour)
@@ -340,7 +338,7 @@ async def dig(ctx):
 
 @bot.command(help="Fish... for fish.\nCan only be used if you have a fishing rod",
             brief="Fish... for fish",
-            usage="{}fish".format(PREFIX),
+            usage="{}fish".format(Constants.PREFIX),
             aliases=["f"])
 async def fish(ctx):
     embed_var = discord.Embed(title="Fishing", description=BotInfo.current_player.fish(), color=ctx.author.colour)
@@ -351,18 +349,19 @@ async def fish(ctx):
 
 @bot.command(help="Hunt and gather resources.\nCan only be used if you have a weapon",
             brief="Hunt and get resources",
-            usage="{}hunt".format(PREFIX),
+            usage="{}hunt".format(Constants.PREFIX),
             aliases=["h"])
 async def hunt(ctx):
     embed_var = discord.Embed(title="Hunting", description=BotInfo.current_player.hunt(), colour=ctx.author.colour)
     embed_var.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+    embed_var.set_footer(text="Health Remaining: {}".format(BotInfo.current_player.current_health))
 
     await ctx.send(embed=embed_var)
 
 
 @bot.command(help="Show the items in your inventory.\nUse the arrows to navigate.",
             brief="View your inventory",
-            usage="{}inv /{}inventory".format(PREFIX, PREFIX),
+            usage="{}inv /{}inventory".format(Constants.PREFIX, Constants.PREFIX),
             aliases=["inventory", "items", "viewitems"])
 async def inv(ctx, other_user=None):
     # Show player's inventory
@@ -496,7 +495,7 @@ async def clear_inv(ctx, arg=None):
 @bot.command(name="recipes",
             help="View all the recipes that can be crafted.\nUse the arrows to navigate",
             brief="View all recipes",
-            usage="{}recipes/{}reps".format(PREFIX, PREFIX),
+            usage="{}recipes/{}reps".format(Constants.PREFIX, Constants.PREFIX),
             aliases=["reps"])
 async def all_recipes(ctx):
     cur_page = 0
@@ -598,7 +597,7 @@ async def all_recipes(ctx):
 @bot.command(name="myrecipes",
             help="View all the items which you can make\nUse the arrows to navigate",
             brief="View items you can make",
-            usage="{}myrecipes/{}mr".format(PREFIX, PREFIX),
+            usage="{}myrecipes/{}mr".format(Constants.PREFIX, Constants.PREFIX),
             aliases=["mr"])
 async def my_recipes(ctx):
     cur_page = 0
@@ -696,7 +695,7 @@ async def my_recipes(ctx):
 
 @bot.command(help="Craft items with your gathered resources",
             brief="Craft items",
-            usage="{}craft <item> <(optional) amount>".format(PREFIX))
+            usage="{}craft <item> <(optional) amount>".format(Constants.PREFIX))
 async def craft(ctx, item, amount = None):
 
     if amount is None:
@@ -719,7 +718,7 @@ async def craft_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title="Crafting",
                                   description="{} incorrect use of command. Please use `{}craft <item> <(optional) amount>`.".format(
-                                      ctx.author.mention, PREFIX),
+                                      ctx.author.mention, Constants.PREFIX),
                                       color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
@@ -728,7 +727,7 @@ async def craft_error(ctx, error):
 @bot.command(name="smeltable",
             help="View all the items which you can smelt in your inventory.\nUse the pages to navigate",
             brief="View all your smeltable items",
-            usage="{}smeltable".format(PREFIX))
+            usage="{}smeltable".format(Constants.PREFIX))
 async def get_smeltable(ctx):
 
     cur_page = 0
@@ -830,7 +829,7 @@ async def get_smeltable(ctx):
 
 @bot.command(help="Smelt your items to create something new",
             brief="Smelt items",
-            usage="{}smelt <item> <(optional) amount>".format(PREFIX))
+            usage="{}smelt <item> <(optional) amount>".format(Constants.PREFIX))
 async def smelt(ctx, item, amount = None):
     
     embed_var = None
@@ -854,7 +853,7 @@ async def smelt_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title = "Smelting",
                                     description="{} incorrect use of command. Please use `{}smelt <item> <(optional) amount>`".format(
-                                    ctx.author.mention, PREFIX), 
+                                    ctx.author.mention, Constants.PREFIX), 
                                     color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
@@ -863,7 +862,7 @@ async def smelt_error(ctx, error):
 @bot.command(name="addfuel",
             help="Take resources from your inventory to add to your fuel stockpile",
             brief="Add fuel to your fuel stockpile",
-            usage="{}addfuel/{}af <item> <(optional) amount>".format(PREFIX, PREFIX),
+            usage="{}addfuel/{}af <item> <(optional) amount>".format(Constants.PREFIX, Constants.PREFIX),
             aliases=["af"])
 async def add_fuel(ctx, item, amount=None):
     
@@ -885,12 +884,12 @@ async def add_fuel_error(ctx, error):
 
     embed_var = discord.Embed(title="Adding Fuel",
                                   description="An unknown error has occured.".format(
-                                      ctx.author.mention, PREFIX), color=ctx.author.colour)
+                                      ctx.author.mention, Constants.PREFIX), color=ctx.author.colour)
 
     if isinstance(error, commands.MissingRequiredArgument):
         embed_var = discord.Embed(title="Adding Fuel",
                                   description="{} incorrect use of command. Please use `{}addfuel/{}af <item> <(optional) amount>`".format(
-                                      ctx.author.mention, PREFIX, PREFIX),
+                                      ctx.author.mention, Constants.PREFIX, Constants.PREFIX),
                                       color=ctx.author.colour)
 
     await ctx.send(embed=embed_var)
@@ -899,7 +898,7 @@ async def add_fuel_error(ctx, error):
 @bot.command(name="stats",
             help="Use this command to show key statistics about the player.",
             brief="Show info about the player",
-            usage="{}stats/{}statistics".format(PREFIX, PREFIX),
+            usage="{}stats/{}statistics".format(Constants.PREFIX, Constants.PREFIX),
             aliases=["statistics"])
 async def statistics(ctx):
     
@@ -917,4 +916,5 @@ async def statistics(ctx):
     await ctx.send(embed=embed_var)
 
 
+# Runs the bot with the correct discord token
 bot.run(discord_token)

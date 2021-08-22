@@ -1,9 +1,7 @@
 import json
+from os import cpu_count
 
-USERS_FILE = "rpg_users.json"
-ITEMS_FILE = "rpg_items.json"
-RECIPES_FILE = "rpg_crafting_recipes.json"
-COMMANDS_FILE = "rpg_commands.json"
+from constants import Constants
 
 class JsonHandler:
     
@@ -12,7 +10,7 @@ class JsonHandler:
 
         users_list = []
 
-        with open(USERS_FILE, "r") as users_file:
+        with open(Constants.USERS_FILE, "r") as users_file:
             users = json.loads(users_file.read())["users"]
 
             for user in users:
@@ -26,7 +24,7 @@ class JsonHandler:
         
         items_list = []
 
-        with open(ITEMS_FILE, "r") as items_file:
+        with open(Constants.ITEMS_FILE, "r") as items_file:
             items = json.loads(items_file.read())["items"]
 
             for item in items:
@@ -40,7 +38,7 @@ class JsonHandler:
 
         recipes_list = []
 
-        with open(RECIPES_FILE, "r") as recipes_file:
+        with open(Constants.RECIPES_FILE, "r") as recipes_file:
             recipes = json.loads(recipes_file.read())["recipes"]
 
             for recipe in recipes:
@@ -48,16 +46,13 @@ class JsonHandler:
 
         return recipes_list
 
-
     @staticmethod
-    def get_commands():
+    def save_json(player):
 
-        command_list = []
+        file_read = open(Constants.USERS_FILE, "r").read()
+        file_read = file_read.replace(player.current_json, player.player_to_json())
 
-        with open(COMMANDS_FILE, "r") as commands_file:
-            commands = json.loads(commands_file.read())["commands"]
+        with open(Constants.USERS_FILE, "w+") as file:
+            file.write(file_read)   
 
-            for command in commands:
-                command_list.append(command)
-
-        return command_list
+        player.current_json = player.player_to_json()     

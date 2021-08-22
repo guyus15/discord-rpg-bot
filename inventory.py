@@ -1,6 +1,6 @@
 import json
-from rpg_json_handler import JsonHandler
-from rpg_item import Item
+from json_handler import JsonHandler
+from item import Item
 
 class Inventory:
     def __init__(self, player_inventory = None):

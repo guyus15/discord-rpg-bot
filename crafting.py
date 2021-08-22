@@ -1,14 +1,6 @@
-import json
-from os import stat
-
-from discord.ext.commands.core import command
-from rpg_bot_info import BotInfo
-
-from rpg_item import Item
-from rpg_json_handler import JsonHandler
-
-items_file = "rpg_items.json"
-items = json.loads(open(items_file, "r").read())["items"]
+from bot_info import BotInfo
+from item import Item
+from json_handler import JsonHandler
 
 class CraftingSystem:
 

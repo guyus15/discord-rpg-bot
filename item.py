@@ -1,4 +1,4 @@
-from rpg_json_handler import JsonHandler
+from json_handler import JsonHandler
 
 class Item:
     def __init__(self, item):

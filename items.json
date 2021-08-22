@@ -15,7 +15,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         { 
             "id": "1",
@@ -31,7 +33,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "2",
@@ -47,7 +51,9 @@
             "fuel-amount": 6,
             "is-smeltable": "yes",
             "fuel-required": 3,
-            "smelted-item": "5:1"
+            "smelted-item": "5:1",
+            "is-food": "no",
+            "food-amount": 0
 
 		},
         {
@@ -64,7 +70,9 @@
             "fuel-amount": 6,
             "is-smeltable": "yes",
             "fuel-required": 3,
-            "smelted-item": "5:1"
+            "smelted-item": "5:1",
+            "is-food": "no",
+            "food-amount": 0
 
 		},
         {
@@ -81,7 +89,9 @@
             "fuel-amount": 6,
             "is-smeltable": "yes",
             "fuel-required": 3,
-            "smelted-item": "5:1"
+            "smelted-item": "5:1",
+            "is-food": "no",
+            "food-amount": 0
 		},
         {
             "id": "3",
@@ -97,7 +107,9 @@
             "fuel-amount": 4,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "3:1",
@@ -113,7 +125,9 @@
             "fuel-amount": 4,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "3:2",
@@ -129,7 +143,9 @@
             "fuel-amount": 4,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
 		{
             "id": "4",
@@ -145,7 +161,9 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 0,
-            "smelted-item": "40"
+            "smelted-item": "40",
+            "is-food": "no",
+            "food-amount": 0
 		},
 		{
             "id": "4:1",
@@ -161,7 +179,9 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 0,
-            "smelted-item": "40:1"
+            "smelted-item": "40:1",
+            "is-food": "no",
+            "food-amount": 0
 		},
 		{
             "id": "4:2",
@@ -177,7 +197,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
 		},
         {
             "id": "5",
@@ -193,7 +215,9 @@
             "fuel-amount": 10,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "5:1",
@@ -209,7 +233,9 @@
             "fuel-amount": 10,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "6",
@@ -225,7 +251,9 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 5,
-            "smelted-item": "9"
+            "smelted-item": "9",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "7",
@@ -241,7 +269,9 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 5,
-            "smelted-item": "10"
+            "smelted-item": "10",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "8",
@@ -257,7 +287,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "9",
@@ -273,7 +305,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "10",
@@ -289,7 +323,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "11",
@@ -304,8 +340,28 @@
             "is-fuel": "no",
             "fuel-amount": 0,
             "is-smeltable": "no",
+            "fuel-required": 2,
+            "smelted-item": "11:3",
+            "is-food": "yes",
+            "food-amount": 3
+        },
+        {
+            "id": "11:3",
+            "name": "Cooked Cod",
+            "command-name": "cookedcod",
+            "description": "A cooked cod fish.",
+            "value": 5,
+            "max-number": 0,
+            "action-type": "none",
+            "tool-type": "none",
+            "is-weapon": "no",
+            "is-fuel": "no",
+            "fuel-amount": 0,
+            "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "yes",
+            "food-amount": 12
         },
         {
             "id": "11:1",
@@ -319,9 +375,29 @@
             "is-weapon": "no",
             "is-fuel": "no",
             "fuel-amount": 0,
+            "is-smeltable": "yes",
+            "fuel-required": 2,
+            "smelted-item": "11:4",
+            "is-food": "yes",
+            "food-amount": 3
+        },
+        {
+            "id": "11:4",
+            "name": "Cooked Mackerel",
+            "command-name": "cookedmackerel",
+            "description": "A cooked mackerel fish.",
+            "value": 15,
+            "max-number": 0,
+            "action-type": "none",
+            "tool-type": "none",
+            "is-weapon": "no",
+            "is-fuel": "no",
+            "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "yes",
+            "food-amount": 12
         },
         {   
             "id": "11:2",
@@ -335,9 +411,29 @@
             "is-weapon": "no",
             "is-fuel": "no",
             "fuel-amount": 0,
+            "is-smeltable": "yes",
+            "fuel-required": 2,
+            "smelted-item": "11:5",
+            "is-food": "yes",
+            "food-amount": 5
+        },
+        {   
+            "id": "11:5",
+            "name": "Cooked Tuna",
+            "command-name": "cookedtuna",
+            "description": "A cooked tuna fish.",
+            "value": 20,
+            "max-number": 0,
+            "action-type": "none",
+            "tool-type": "none",
+            "is-weapon": "no",
+            "is-fuel": "no",
+            "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "yes",
+            "food-amount": 15
         },
         {   
             "id": "12",
@@ -353,7 +449,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "13",
@@ -369,7 +467,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "13:1",
@@ -385,7 +485,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "14",
@@ -401,7 +503,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "14:1",
@@ -417,7 +521,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "15",
@@ -433,7 +539,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "15:1",
@@ -449,7 +557,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "16",
@@ -465,7 +575,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "16:1",
@@ -481,7 +593,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "16:2",
@@ -497,7 +611,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "16:3",
@@ -513,7 +629,9 @@
             "fuel-amount": 1,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "20",
@@ -529,7 +647,9 @@
             "fuel-amount": 3,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "21",
@@ -545,7 +665,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "30",
@@ -561,7 +683,9 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 3,
-            "smelted-item": "30:1"
+            "smelted-item": "30:1",
+            "is-food": "yes",
+            "food-amount": 5
         },
         {
             "id": "30:1",
@@ -577,7 +701,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 3,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "yes",
+            "food-amount": 15
         },
         {
             "id": "31",
@@ -593,13 +719,15 @@
             "fuel-amount": 0,
             "is-smeltable": "yes",
             "fuel-required": 3,
-            "smelted-item": "31:1"
+            "smelted-item": "31:1",
+            "is-food": "no",
+            "food-amount": 5
         },
         {
             "id": "31:1",
             "name": "Steak",
             "command-name": "cookedbeef",
-            "description": "A cooked hunk of beef",
+            "description": "A good hunk of unseasoned steak",
             "value": 10,
             "max-number": 3,
             "action-type": "none",
@@ -609,7 +737,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 20
         },
         {
             "id": "40",
@@ -625,7 +755,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         },
         {
             "id": "40:1",
@@ -641,7 +773,9 @@
             "fuel-amount": 0,
             "is-smeltable": "no",
             "fuel-required": 0,
-            "smelted-item": "none"
+            "smelted-item": "none",
+            "is-food": "no",
+            "food-amount": 0
         }
 	]
 }

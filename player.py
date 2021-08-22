@@ -1,17 +1,18 @@
 import time
 import random
 
-from rpg_bot_info import BotInfo
-from rpg_json_handler import JsonHandler
-from rpg_inventory import Inventory
-from rpg_item import Item
+from bot_info import BotInfo
+from json_handler import JsonHandler
+from inventory import Inventory
+from item import Item
+from constants import Constants
 
 class Player:
     def __init__(self, name, user=None):
         self.name = name
-        self.max_health = 100
-        self.max_armour = 100
-        self.cooldown_duration = 120
+        self.max_health = Constants.MAX_HEALTH
+        self.max_armour = Constants.MAX_ARMOUR
+        self.cooldown_duration = Constants.COOLDOWN_SECONDS
 
         if user == None: # Consider this as a new user.
             self.current_health = self.max_health
@@ -48,15 +49,6 @@ class Player:
 
         return string
 
-    def save_json(self):
-
-        file_read = open("rpg_users.json", "r").read()
-        file_read = file_read.replace(self.current_json, self.player_to_json())
-
-        with open("rpg_users.json", "w+") as file:
-            file.write(file_read)   
-
-        self.current_json = self.player_to_json()     
 
     def add_health(self, amount):
 
@@ -79,6 +71,10 @@ class Player:
         self.current_cooldown_time = time.time()
 
     def can_do_action(self):
+
+        # Let me do this without cooldown for testing purposes.
+        if "guyus" in self.name:
+            return True
 
         if time.time() - self.current_cooldown_time >= self.cooldown_duration:
             return True
@@ -140,7 +136,7 @@ class Player:
             print("removing item {}".format(item.get_id()))
             self.inventory.remove_item(item.get_id())
 
-        self.save_json()
+        JsonHandler.save_json(self)
 
     def chop(self):
 
@@ -167,7 +163,7 @@ class Player:
 
             self.set_cooldown_time()
 
-            self.save_json()
+            JsonHandler.save_json(self)
 
             return "{} has chopped **{} {}**".format(BotInfo.last_message_received.author.mention, str(num_items), choice.name)
         else:
@@ -203,7 +199,7 @@ class Player:
 
             self.set_cooldown_time()
 
-            self.save_json()
+            JsonHandler.save_json(self)
 
             return "{} has dug **{} {}**".format(BotInfo.last_message_received.author.mention, str(num_items), choice.name)
         else:
@@ -265,7 +261,7 @@ class Player:
 
             self.set_cooldown_time()
 
-            self.save_json()
+            JsonHandler.save_json(self)
 
             return "{} has mined **{} {}**".format(BotInfo.last_message_received.author.mention, str(num_items), choice.name)
         else:
@@ -290,13 +286,13 @@ class Player:
         if self.can_do_action():
             choice = random.choice(fishable_items)
 
-            for i in range(0, random.randint(0, choice.max_number)):
+            for i in range(random.randint(0, choice.max_number)):
                 num_items += 1
                 self.inventory.add_item(choice)
 
             self.set_cooldown_time()
 
-            self.save_json()
+            JsonHandler.save_json(self)
 
             if num_items > 0:
                 return "{} has caught **{} {} fish!**".format(BotInfo.last_message_received.author.mention, str(num_items), choice.name)
@@ -317,9 +313,50 @@ class Player:
         if can_hunt == False:
             return "**{} you cannot hunt without a weapon!**".format(BotInfo.last_message_received.author.mention)
 
-        self.set_cooldown_time()
+        huntable_items = self.get_action_items("huntable")
+        
+        choice = None
+        final_string = ""
 
-        self.save_json()
+        if self.can_do_action():
 
-        return "{} you are now hunting. Good luck not getting anything.".format(BotInfo.last_message_received.author.mention)
+            # Key = ITEM, Value = QUANTITY
+            items_collected = {}
 
+            for i in range(random.randint(1, 4)):
+                choice = random.choice(huntable_items)
+                
+                items_collected[choice] = random.randint(1, choice.max_number)
+
+            for item in items_collected:
+                for i in range(items_collected.get(item)):
+                    self.inventory.add_item(item)
+                
+                final_string += "- **{}**: {}\n".format(item.get_name(), items_collected.get(item))
+                
+            final_string += "\n" # Add some spacing in embed
+
+            health_lost = random.choice([True, False])
+            health_to_remove = None
+
+            if health_lost:
+                health_to_remove = random.randint(10, 51)
+                self.remove_health(health_to_remove)
+
+            self.set_cooldown_time()
+
+            JsonHandler.save_json(self)
+
+            if self.current_health <= 0:
+                return self.die()
+            elif health_lost:
+                final_string += "\nYou were attacked on your hunting trip and have lost **{}** health.".format(health_to_remove)
+
+            return "{} after your hunting trip you have received:\n\n{}".format(BotInfo.last_message_received.author.mention, final_string)
+
+        else:
+            return "{} you must wait **{}** seconds before you can do this action.".format(BotInfo.last_message_received.author.mention, str(self.get_time_to_wait()))
+
+
+    def die(self):
+        return "**{} YOU ARE DEAD IDIOT! Making funeral arrangements as we speak.**".format(BotInfo.last_message_received.author.mention)
